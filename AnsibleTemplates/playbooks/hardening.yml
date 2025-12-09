@@ -1,0 +1,6 @@
+---
+- name: System Hardening Playbook
+  hosts: all
+  become: yes
+  roles:
+    - security

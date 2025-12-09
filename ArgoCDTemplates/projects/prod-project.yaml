@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: {{PROJECT}}
+  namespace: argocd
+  labels:
+    env: prod
+    app.kubernetes.io/part-of: argocd
+spec:
+  description: "Production applications"
+  sourceRepos:
+    - '*'
+  destinations:
+    - namespace: '*'
+      server: '*'
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  orphanedResources:
+    warn: true
+  roles:
+    - name: admin
+      description: Full access to production applications
+      policies:
+        - p, proj:{{PROJECT}}:admin, applications, *, {{PROJECT}}/*, allow
+      groups:
+        - production-admins

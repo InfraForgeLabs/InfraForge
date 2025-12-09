@@ -1,0 +1,23 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{APP_NAME}}-vs
+  namespace: {{NAMESPACE}}
+spec:
+  hosts:
+    - "{{APP_NAME}}.example.com"
+  gateways:
+    - {{APP_NAME}}-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: {{APP_NAME}}
+            port:
+              number: {{PORT}}
+      retries:
+        attempts: 3
+        perTryTimeout: 2s
+        retryOn: gateway-error,connect-failure,refused-stream

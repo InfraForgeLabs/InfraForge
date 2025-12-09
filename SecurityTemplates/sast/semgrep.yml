@@ -1,0 +1,5 @@
+rules:
+  - id: insecure-code
+    pattern: print(.*)
+    message: Avoid printing sensitive info
+    severity: WARNING

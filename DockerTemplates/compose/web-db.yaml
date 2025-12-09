@@ -1,0 +1,29 @@
+# ============================================================
+# 🌍 Web + Database Stack (Generic App + PostgreSQL)
+# ------------------------------------------------------------
+# Compatible with Docker Template Generator v3.9
+# Supports optional add-ons: Logging, Healthcheck, Networks, Volumes, Env
+# ============================================================
+
+version: "3.8"
+
+services:
+  web:
+    build: .
+    container_name: web
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:16
+    container_name: db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: appdb
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: unless-stopped

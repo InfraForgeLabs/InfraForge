@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{APP_NAME}}-migrate
+  namespace: {{NAMESPACE}}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{APP_NAME}}-migrate
+    spec:
+      serviceAccountName: {{APP_NAME}}-sa
+      restartPolicy: Never
+      containers:
+        - name: migrate
+          image: {{IMAGE}}
+          command: ["sh", "-c", "echo Running DB migration... && sleep 5"]

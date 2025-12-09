@@ -1,0 +1,23 @@
+# ===============================
+# Loki Config Template
+# ===============================
+auth_enabled: {{AUTH_ENABLED}}
+server:
+  http_listen_port: {{HTTP_PORT}}
+common:
+  path_prefix: {{PATH_PREFIX}}
+  storage:
+    filesystem:
+      chunks_directory: {{CHUNKS_DIR}}
+      rules_directory: {{RULES_DIR}}
+schema_config:
+  configs:
+    - from: {{SCHEMA_FROM}}
+      store: {{SCHEMA_STORE}}
+      object_store: {{OBJECT_STORE}}
+      schema: {{SCHEMA_VERSION}}
+      index:
+        prefix: {{INDEX_PREFIX}}
+        period: {{INDEX_PERIOD}}
+limits_config:
+  retention_period: {{RETENTION_PERIOD}}

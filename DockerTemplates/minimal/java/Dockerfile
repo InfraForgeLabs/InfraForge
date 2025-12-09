@@ -1,0 +1,11 @@
+FROM {{BASE_IMAGE}}
+
+WORKDIR /app
+
+COPY . .
+
+RUN {{INSTALL_CMD}}
+
+EXPOSE {{PORT}}
+
+CMD ["{{RUN_CMD}}"]

@@ -1,0 +1,57 @@
+pipeline {
+  agent any
+
+  environment {
+    APP_NAME    = "{{APP_NAME}}"
+    ENVIRONMENT = "{{ENV}}"
+    IMAGE       = "{{IMAGE}}"
+    IMAGE_TAG   = "{{VERSION_TAG}}"
+    REPO_URL    = "{{REPO_URL}}"
+    BRANCH      = "{{BRANCH}}"
+  }
+
+  stages {
+
+    stage('Build') {
+      steps {
+        script {
+          echo "🏗️ Building ${APP_NAME}..."
+          echo "Image: ${IMAGE}:${IMAGE_TAG}"
+          sh """
+            docker build -t ${IMAGE}:${IMAGE_TAG} .
+            docker tag ${IMAGE}:${IMAGE_TAG} ${IMAGE}:latest
+          """
+        }
+      }
+      post {
+        success { echo "🟢 Build successful for ${APP_NAME}" }
+        failure { echo "🔴 Build failed for ${APP_NAME}" }
+      }
+    }
+
+    stage('Deploy') {
+      steps {
+        script {
+          echo "🚀 Deploying ${APP_NAME} to ${ENVIRONMENT}..."
+          sh """
+            echo "Simulating deployment..."
+            echo "Application: ${APP_NAME}"
+            echo "Version: ${IMAGE_TAG}"
+            echo "Environment: ${ENVIRONMENT}"
+          """
+        }
+      }
+      post {
+        success { echo "✅ Deployment successful for ${APP_NAME}" }
+        failure { echo "❌ Deployment failed for ${APP_NAME}" }
+      }
+    }
+
+  }
+
+  post {
+    always {
+      echo "📦 Pipeline completed for ${APP_NAME} - Version ${IMAGE_TAG}"
+    }
+  }
+}

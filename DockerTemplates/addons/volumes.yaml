@@ -1,0 +1,3 @@
+volumes:
+  {{APP_NAME}}_data:
+    driver: local

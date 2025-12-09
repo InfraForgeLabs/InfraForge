@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-cm
+  namespace: argocd
+data:
+  service.slack: |
+    token: $slack-token
+  trigger.on-sync-status-change: |
+    - description: Notify Slack when app sync status changes
+      send:
+        - slack
+      when: app.status.operationState.phase in ['Succeeded', 'Failed']
+  template.app-sync-status: |
+    slack:
+      attachments: |
+        [{
+          "title": "{{.app.metadata.name}} - {{.app.status.operationState.phase}}",
+          "text": "App {{.app.metadata.name}} sync {{.app.status.operationState.phase}} at {{.app.status.operationState.finishedAt}}",
+          "color": "{{if eq .app.status.operationState.phase \"Succeeded\"}}good{{else}}danger{{end}}"
+        }]

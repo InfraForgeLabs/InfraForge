@@ -1,0 +1,43 @@
+integration:
+  tool: jira
+  enabled: true
+
+  # 🔗 Jira Server Configuration
+  jira:
+    base_url: "https://jira.example.com"
+    project: "{{JIRA_PROJECT}}"            # e.g., SECURITY
+    issueType: "{{ISSUE_TYPE}}"            # e.g., Vulnerability, Bug, Task
+    username: "{{JIRA_USER}}"              # CI/CD or bot account
+    api_token: "${JIRA_TOKEN}"             # Secure secret from Jenkins/GitHub
+    create_issue_on:                       # Which scans trigger Jira issues
+      - sast
+      - sca
+      - dast
+      - secrets
+      - policy
+
+  # 🧠 Dynamic Issue Content
+  issue_template:
+    summary: "[{{MODE_PATH | upper}}] Security Finding in {{APP_NAME}}"
+    description: |
+      *Application:* {{APP_NAME}}
+      *Container Image:* {{IMAGE}}
+      *Target URL:* {{TARGET_URL}}
+      *Scan Type:* {{MODE_PATH}}
+      *Date:* {{DATE}}
+      
+      *Detected Vulnerabilities:*  
+      {{SCAN_SUMMARY}}
+
+      *Pipeline:* {{PIPELINE_URL}}
+      *Report:* {{SCAN_REPORT}}
+
+    labels:
+      - DevSecOps
+      - Automated
+      - SecurityScan
+      - {{MODE_PATH}}
+
+  # 🕹️ Optional Auto-Close Configuration
+  auto_close_resolved: true
+  resolution_status: "Fixed"

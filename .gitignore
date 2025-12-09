@@ -1,0 +1,4 @@
+# File: DevopsTemplates/.gitignore
+.cache/
+output/
+*.log

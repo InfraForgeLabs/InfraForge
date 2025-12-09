@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{APP_NAME}}-cleanup
+  namespace: {{NAMESPACE}}
+  annotations:
+    "helm.sh/hook": pre-delete
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{APP_NAME}}-cleanup
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: cleanup
+          image: busybox
+          command: ["sh", "-c", "echo Cleaning up resources... && sleep 2"]

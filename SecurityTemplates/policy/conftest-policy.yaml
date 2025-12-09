@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Policy
+metadata:
+  name: disallow-root
+spec:
+  rules:
+    - match:
+        kind: Pod
+      validate:
+        message: Pods should not run as root
+        pattern:
+          spec:
+            containers:
+              - securityContext:
+                  runAsNonRoot: true

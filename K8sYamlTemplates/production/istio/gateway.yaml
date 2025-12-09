@@ -1,0 +1,26 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: {{APP_NAME}}-gateway
+  namespace: {{NAMESPACE}}
+spec:
+  selector:
+    istio: ingressgateway # Use default ingress gateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "{{APP_NAME}}.example.com"
+      tls:
+        httpsRedirect: true
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      hosts:
+        - "{{APP_NAME}}.example.com"
+      tls:
+        mode: SIMPLE
+        credentialName: {{APP_NAME}}-tls-secret

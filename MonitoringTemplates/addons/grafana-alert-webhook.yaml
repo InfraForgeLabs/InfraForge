@@ -1,0 +1,10 @@
+# ===============================
+# Grafana Webhook ConfigMap (Addon Template)
+# ===============================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{APP_NAME}}
+  namespace: {{NAMESPACE}}
+data:
+  endpoint: "{{ENDPOINT}}"

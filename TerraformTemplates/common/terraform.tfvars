@@ -1,0 +1,7 @@
+aws_region           = "{{AWS_REGION}}"
+key_name             = "{{KEY_NAME}}"
+ami_id               = "{{AMI_ID}}"
+subnet_id            = "{{SUBNET_ID}}"
+ssh_private_key_path = "{{SSH_PRIVATE_KEY_PATH}}"
+dockerhub_user       = "{{DOCKERHUB_USER}}"
+instance_type        = "{{INSTANCE_TYPE}}"

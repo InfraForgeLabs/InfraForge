@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  api:
+    build: ./api
+    container_name: {{APP_NAME}}_api
+    ports:
+      - "{{PORT_API}}:{{PORT_API}}"
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: {{APP_NAME}}_frontend
+    ports:
+      - "{{PORT_FRONTEND}}:{{PORT_FRONTEND}}"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  worker:
+    build: ./worker
+    container_name: {{APP_NAME}}_worker
+    depends_on:
+      - api
+      - db
+    restart: unless-stopped
+
+  redis:
+    image: redis:alpine
+    container_name: {{APP_NAME}}_redis
+    restart: unless-stopped
+
+  db:
+    image: postgres:16
+    container_name: {{APP_NAME}}_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: appdb
+    volumes:
+      - {{APP_NAME}}_db_data:/var/lib/postgresql/data
+    restart: unless-stopped

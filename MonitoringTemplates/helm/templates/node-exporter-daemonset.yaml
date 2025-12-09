@@ -1,0 +1,27 @@
+# ===============================
+# Node Exporter DaemonSet (Helm Template)
+# ===============================
+{{- if .Values.nodeExporter.enabled }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ .Release.Name }}-node-exporter
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: node-exporter
+spec:
+  selector:
+    matchLabels:
+      app: node-exporter
+  template:
+    metadata:
+      labels:
+        app: node-exporter
+    spec:
+      hostPID: true
+      containers:
+      - name: node-exporter
+        image: {{ .Values.nodeExporter.image | default "prom/node-exporter:v1.8.2" }}
+        ports:
+        - containerPort: {{ .Values.nodeExporter.port | default 9100 }}
+{{- end }}

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: repo-creds
+  namespace: argocd
+stringData:
+  url: {{REPO_URL}}
+  username: gituser
+  password: yourtoken

@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{APP_NAME}}-dashboard
+  namespace: {{NAMESPACE}}
+  labels:
+    grafana_dashboard: "1"
+    app: {{APP_NAME}}
+data:
+  {{APP_NAME}}-dashboard.json: |
+    {
+      "title": "{{APP_NAME}} Metrics",
+      "schemaVersion": 16,
+      "panels": [
+        {
+          "type": "graph",
+          "title": "CPU Usage",
+          "targets": [{"expr": "rate(container_cpu_usage_seconds_total{pod=~\"{{APP_NAME}}.*\"}[5m])"}]
+        }
+      ]
+    }

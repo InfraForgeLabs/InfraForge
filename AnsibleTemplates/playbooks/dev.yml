@@ -1,0 +1,8 @@
+---
+- name: Development Environment Setup
+  hosts: dev
+  become: yes
+  roles:
+    - common
+    - docker
+
