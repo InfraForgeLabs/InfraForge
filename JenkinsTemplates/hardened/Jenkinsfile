@@ -1,0 +1,132 @@
+// ============================================================
+// 🛡️ Hardened Jenkinsfile Template (DevSecOps Ready)
+// ------------------------------------------------------------
+// Auto-generated via Jenkins Pipeline Generator v2.8
+// Placeholders replaced by generator script:
+// {{APP_NAME}}, {{ENV}}, {{IMAGE}}, {{VERSION_TAG}}, {{REPO_URL}}, {{BRANCH}}
+// Addons (optional): Slack, Email, SonarQube, Trivy, OWASP ZAP
+// ============================================================
+
+pipeline {
+  agent any
+
+  environment {
+    APP_NAME    = "{{APP_NAME}}"
+    ENVIRONMENT = "{{ENV}}"
+    IMAGE       = "{{IMAGE}}"
+    IMAGE_TAG   = "{{VERSION_TAG}}"
+    REPO_URL    = "{{REPO_URL}}"
+    BRANCH      = "{{BRANCH}}"
+  }
+
+  options {
+    timestamps()
+    ansiColor('xterm')
+    disableConcurrentBuilds()
+  }
+
+  stages {
+
+    // ------------------------------------------------------------
+    // 🔹 Stage 1: Checkout Source
+    // ------------------------------------------------------------
+    stage('Checkout Source') {
+      steps {
+        script {
+          echo "📦 Checking out branch '${BRANCH}' from ${REPO_URL}"
+          checkout([
+            $class: 'GitSCM',
+            branches: [[name: "${BRANCH}"]],
+            userRemoteConfigs: [[url: "${REPO_URL}"]]
+          ])
+        }
+      }
+    }
+
+    // ------------------------------------------------------------
+    // 🔹 Stage 2: SAST - SonarQube (Pre-Build)
+    // ------------------------------------------------------------
+    stage('SAST - SonarQube Analysis') {
+      steps {
+        echo "🔎 Running static code analysis with SonarQube..."
+        echo "This stage will be replaced by the SonarQube addon if selected."
+      }
+    }
+
+    // ------------------------------------------------------------
+    // 🔹 Stage 3: SCA - Trivy FS Scan (Pre-Build)
+    // ------------------------------------------------------------
+    stage('SCA - Trivy FS Scan (Pre-Build)') {
+      steps {
+        echo "🧩 Running Trivy file system scan..."
+        echo "This placeholder will be replaced by Trivy FS scan addon."
+      }
+    }
+
+    // ------------------------------------------------------------
+    // 🔹 Stage 4: Build & Tag Docker Image
+    // ------------------------------------------------------------
+    stage('Build & Tag Image') {
+      steps {
+        script {
+          def fullImage = "${IMAGE}:${IMAGE_TAG}"
+          echo "🏗️ Building Docker image: ${fullImage}"
+
+          sh """
+            docker build -t ${fullImage} .
+            docker tag ${fullImage} ${IMAGE}:latest
+          """
+
+          echo "✅ Image built and tagged successfully: ${fullImage}"
+        }
+      }
+    }
+
+    // ------------------------------------------------------------
+    // 🔹 Stage 5: SCA - Trivy Image Scan (Post-Build)
+    // ------------------------------------------------------------
+    stage('SCA - Trivy Image Scan (Post-Build)') {
+      steps {
+        echo "🔍 Running Trivy container image scan..."
+        echo "This placeholder will be replaced by Trivy image scan addon."
+      }
+    }
+
+    // ------------------------------------------------------------
+    // 🔹 Stage 6: DAST - OWASP ZAP Scan
+    // ------------------------------------------------------------
+    stage('DAST - OWASP ZAP Scan') {
+      steps {
+        echo "🕷️ Running OWASP ZAP Dynamic Application Security Test..."
+        echo "This placeholder will be replaced by the ZAP addon if selected."
+      }
+    }
+
+    // ------------------------------------------------------------
+    // 🔹 Stage 7: Deploy (Environment: {{ENV}})
+    // ------------------------------------------------------------
+    stage('Deploy') {
+      steps {
+        script {
+          echo "🚀 Deploying ${APP_NAME} to environment: ${ENVIRONMENT}"
+          sh """
+            echo "Simulating deployment..."
+            echo "Application: ${APP_NAME}"
+            echo "Version: ${IMAGE_TAG}"
+            echo "Environment: ${ENVIRONMENT}"
+          """
+        }
+      }
+    }
+
+    // ------------------------------------------------------------
+    // 🔹 Stage 8: Post-Deploy Verification
+    // ------------------------------------------------------------
+    stage('Post-Deploy Verification') {
+      steps {
+        echo "🔍 Running smoke tests and health checks..."
+        echo "This can be extended with curl or k6 scripts."
+      }
+    }
+  }
+}

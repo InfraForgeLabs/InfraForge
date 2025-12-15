@@ -1,0 +1,11 @@
+---
+- name: Site Playbook
+  hosts: all
+  become: yes
+  roles:
+    - common
+    - docker
+    - k8s
+    - security
+    - monitoring
+    - user-management

@@ -1,0 +1,45 @@
+# ===============================
+# Loki Deployment + ConfigMap (Template)
+# ===============================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{APP_NAME}}
+  namespace: {{NAMESPACE}}
+  labels:
+    app: loki
+spec:
+  replicas: {{REPLICAS}}
+  selector:
+    matchLabels:
+      app: loki
+  template:
+    metadata:
+      labels:
+        app: loki
+    spec:
+      containers:
+      - name: loki
+        image: {{IMAGE}}
+        args:
+        - "-config.file=/etc/loki/config.yaml"
+        ports:
+        - containerPort: {{PORT}}
+        volumeMounts:
+        - name: config
+          mountPath: /etc/loki
+      volumes:
+      - name: config
+        configMap:
+          name: {{CONFIGMAP_NAME}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{CONFIGMAP_NAME}}
+  namespace: {{NAMESPACE}}
+data:
+  config.yaml: |
+    auth_enabled: {{AUTH_ENABLED}}
+    server:
+      http_listen_port: {{PORT}}

@@ -1,0 +1,29 @@
+# ============================================================
+# 🩺 Healthcheck Add-on Template
+# ------------------------------------------------------------
+# Reference for generator logic (v3.7+)
+# Actual command and port are injected dynamically by the script.
+# Works for Python, Node.js, Golang, Ruby, and PHP apps.
+# ============================================================
+
+# This file is a placeholder for metadata only.
+# The generator automatically injects the appropriate healthcheck
+# block into:
+#   - Dockerfile → using `HEALTHCHECK ...`
+#   - docker-compose.yaml → using `healthcheck:` YAML block
+#
+# Example (auto-generated):
+# ------------------------------------------------------------
+# 🐳 Dockerfile mode:
+# HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
+#   CMD curl -f http://localhost:8080/ || exit 1
+#
+# 🧱 Docker Compose mode:
+# healthcheck:
+#   test: ["CMD", "bash", "-c", "curl -f http://localhost:8080/"]
+#   interval: 30s
+#   timeout: 10s
+#   retries: 3
+#
+# No manual edits required — this file ensures compatibility
+# with cache and GitHub fetch logic in the generator.

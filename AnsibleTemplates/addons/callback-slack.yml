@@ -1,0 +1,9 @@
+---
+# Slack Notification Callback Plugin
+# https://docs.ansible.com/ansible/latest/plugins/callback.html
+callback_whitelist:
+  - slack
+slack:
+  token: "{{SLACK_WEBHOOK_URL}}"
+  channel: "{{SLACK_CHANNEL}}"
+  username: "AnsibleBot"

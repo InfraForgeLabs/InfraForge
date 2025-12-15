@@ -1,0 +1,8 @@
+---
+- name: Staging Environment Configuration
+  hosts: staging
+  become: yes
+  roles:
+    - common
+    - docker
+    - k8s

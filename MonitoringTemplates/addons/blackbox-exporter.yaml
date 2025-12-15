@@ -1,0 +1,68 @@
+# ===============================
+# Blackbox Exporter Deployment + Service + ServiceMonitor (Addon Template)
+# ===============================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{APP_NAME}}
+  labels:
+    app: {{APP_NAME}}
+spec:
+  replicas: {{REPLICAS}}
+  selector:
+    matchLabels:
+      app: {{APP_NAME}}
+  template:
+    metadata:
+      labels:
+        app: {{APP_NAME}}
+    spec:
+      containers:
+      - name: {{APP_NAME}}
+        image: {{IMAGE}}
+        ports:
+        - containerPort: {{PORT}}
+        resources:
+          limits:
+            cpu: "{{CPU_LIMIT}}"
+            memory: "{{MEMORY_LIMIT}}"
+          requests:
+            cpu: "{{CPU_REQUEST}}"
+            memory: "{{MEMORY_REQUEST}}"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{APP_NAME}}
+  labels:
+    app: {{APP_NAME}}
+spec:
+  selector:
+    app: {{APP_NAME}}
+  ports:
+  - name: http
+    port: {{PORT}}
+    targetPort: {{PORT}}
+  type: ClusterIP
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{APP_NAME}}
+  labels:
+    app: {{APP_NAME}}
+spec:
+  selector:
+    matchLabels:
+      app: {{APP_NAME}}
+  namespaceSelector:
+    matchNames:
+      - {{NAMESPACE}}
+  endpoints:
+  - port: http
+    interval: {{INTERVAL}}
+    path: /probe
+    params:
+      module: [{{MODULE}}]

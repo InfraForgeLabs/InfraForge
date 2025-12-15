@@ -1,0 +1,16 @@
+# ===============================
+# Promtail Config Template
+# ===============================
+server:
+  http_listen_port: {{SERVER_PORT}}
+clients:
+  - url: {{LOKI_URL}}
+scrape_configs:
+  - job_name: {{JOB_NAME}}
+    kubernetes_sd_configs:
+      - role: pod
+    pipeline_stages:
+      - docker: {}
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_node_name]
+        target_label: node

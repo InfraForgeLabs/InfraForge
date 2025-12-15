@@ -1,0 +1,33 @@
+# ============================================================
+# 📧 Email Alert Addon for DevSecOps Security Suite
+# Version: {{VERSION}}
+# ============================================================
+
+alert:
+  type: email
+  enabled: true
+  smtp:
+    host: smtp.gmail.com
+    port: 587
+    username: "{{APP_NAME}}-noreply@example.com"
+    password: "${SMTP_PASSWORD}"   # Inject from Jenkins secret
+    use_tls: true
+  sender: "DevSecOps Alerts <{{APP_NAME}}@example.com>"
+  recipients:
+    - devsecops@example.com
+    - admin@example.com
+  subject: "[Security Alert] {{MODE_PATH}} scan for {{APP_NAME}}"
+  body: |
+    Hello Team,
+
+    The latest **{{MODE_PATH}}** scan for **{{APP_NAME}}** has completed.
+    - 🕒 Time: {{DATE}}
+    - 📦 Container: {{IMAGE}}
+    - 🌐 Target: {{TARGET_URL}}
+    - 📁 Report: {{SCAN_REPORT}}
+
+    Please review the detailed findings in your CI/CD console or dashboard:
+    {{PIPELINE_URL}}
+
+    Regards,  
+    🛡️ DevSecOps Bot

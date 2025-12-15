@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{APP_NAME}}-alerts
+  namespace: {{NAMESPACE}}
+  labels:
+    app: {{APP_NAME}}
+spec:
+  groups:
+    - name: {{APP_NAME}}.rules
+      rules:
+        - alert: HighPodRestartRate
+          expr: rate(kube_pod_container_status_restarts_total[5m]) > 0.1
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High restart rate detected for {{APP_NAME}}"

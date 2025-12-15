@@ -1,0 +1,23 @@
+# ===============================
+# Grafana Datasources ConfigMap (Addon Template)
+# ===============================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{APP_NAME}}
+  namespace: {{NAMESPACE}}
+  labels:
+    grafana_datasource: "1"
+data:
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: {{PROMETHEUS_NAME}}
+        type: prometheus
+        access: proxy
+        url: {{PROMETHEUS_URL}}
+        isDefault: true
+      - name: {{LOKI_NAME}}
+        type: loki
+        access: proxy
+        url: {{LOKI_URL}}

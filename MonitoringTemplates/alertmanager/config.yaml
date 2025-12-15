@@ -1,0 +1,17 @@
+# ===============================
+# Alertmanager ConfigMap (Slack Integration) (Addon Template)
+# ===============================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{APP_NAME}}
+  namespace: {{NAMESPACE}}
+data:
+  alertmanager.yml: |
+    route:
+      receiver: '{{RECEIVER_NAME}}'
+    receivers:
+    - name: '{{RECEIVER_NAME}}'
+      slack_configs:
+      - api_url: '{{SLACK_API_URL}}'
+        channel: '{{SLACK_CHANNEL}}'

@@ -1,0 +1,13 @@
+FROM {{BASE_IMAGE}}
+
+WORKDIR /app
+
+COPY . .
+
+RUN {{BUILD_CMD}}
+
+USER 1001
+
+EXPOSE {{PORT}}
+
+CMD ["{{RUN_CMD}}"]

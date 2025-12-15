@@ -1,0 +1,19 @@
+# --- Application Environment ---
+APP_ENV=production
+# For specific stacks:
+#   PYTHON_ENV=production
+#   NODE_ENV=production
+#   GO_ENV=production
+
+# --- Application Port ---
+PORT=8080
+
+# --- Database Configuration ---
+DB_USER=user
+DB_PASS=password
+DB_HOST=db
+DB_NAME=appdb
+
+# --- Optional: Service URLs / Tokens ---
+# API_URL=https://api.example.com
+# SECRET_KEY=changeme

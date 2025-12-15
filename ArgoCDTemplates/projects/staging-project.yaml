@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: {{PROJECT}}
+  namespace: argocd
+  labels:
+    env: staging
+    app.kubernetes.io/part-of: argocd
+spec:
+  description: "Staging environment"
+  sourceRepos:
+    - '*'
+  destinations:
+    - namespace: '*'
+      server: '*'
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  orphanedResources:
+    warn: true
+  roles:
+    - name: staging-admin
+      description: Manage staging applications
+      policies:
+        - p, proj:{{PROJECT}}:staging-admin, applications, *, {{PROJECT}}/*, allow
+      groups:
+        - staging-admins

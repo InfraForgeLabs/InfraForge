@@ -1,0 +1,9 @@
+---
+- name: Example Playbook using Vault
+  hosts: localhost
+  vars:
+    vault_password: "{{ANSIBLE_VAULT_PASS}}"
+  tasks:
+    - name: Show vault password (debug only)
+      debug:
+        msg: "Vault password = {{ vault_password }}"

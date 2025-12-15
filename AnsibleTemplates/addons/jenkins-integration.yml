@@ -1,0 +1,10 @@
+---
+- name: Jenkins Integration Playbook
+  hosts: localhost
+  tasks:
+    - name: Trigger Jenkins Job
+      community.general.jenkins_job_trigger:
+        url: "{{JENKINS_URL}}"
+        user: "{{JENKINS_USER}}"
+        token: "{{JENKINS_TOKEN}}"
+        job: "{{JOB_NAME}}"

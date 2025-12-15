@@ -1,0 +1,21 @@
+prometheus:
+  image: prom/prometheus:v2.54.0
+  replicas: 1
+  retention: 15d
+
+grafana:
+  image: grafana/grafana:10.4.3
+  adminUser: admin
+  adminPassword: admin
+  serviceType: ClusterIP
+
+loki:
+  image: grafana/loki:2.9.8
+  retention: 7d
+
+alertmanager:
+  image: prom/alertmanager:v0.27.0
+  slackWebhook: "https://hooks.slack.com/services/T000/B000/XXXX"
+
+nodeExporter:
+  enabled: true

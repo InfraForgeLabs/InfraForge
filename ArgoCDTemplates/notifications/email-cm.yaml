@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-cm
+  namespace: argocd
+data:
+  service.email: |
+    host: smtp.gmail.com
+    port: 587
+    from: "argocd@example.com"
+    username: $email-username
+    password: $email-password
+  trigger.on-sync-status-change: |
+    - description: Notify Email when app sync status changes
+      send:
+        - email
+      when: app.status.operationState.phase in ['Succeeded', 'Failed']
+  template.app-sync-status: |
+    email:
+      subject: "ArgoCD App {{.app.metadata.name}} - {{.app.status.operationState.phase}}"
+      body: |
+        <p>Application <b>{{.app.metadata.name}}</b> sync status: <b>{{.app.status.operationState.phase}}</b></p>

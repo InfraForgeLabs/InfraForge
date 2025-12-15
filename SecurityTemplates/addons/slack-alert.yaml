@@ -1,0 +1,28 @@
+
+alert:
+  type: slack
+  enabled: true
+
+  # 🔗 Slack Configuration
+  slack:
+    channel: "{{SLACK_CHANNEL}}"               # e.g. #security-alerts
+    webhook: "${SLACK_WEBHOOK}"                # Inject via Jenkins secret or GitHub secret
+    username: "DevSecOps Bot 🤖"
+    icon_emoji: ":shield:"
+    notify_on:
+      - sast
+      - sca
+      - dast
+      - secrets
+      - policy
+
+  # 🧠 Message Template
+  message: |
+    *🛡️ Security Alert — {{APP_NAME}}*
+    *Scan Type:* {{MODE_PATH | upper}}
+    *Image:* {{IMAGE}}
+    *Target:* {{TARGET_URL}}
+    *Status:* Completed at {{DATE}}
+    
+    *Summary:*  
+    {{SCAN_SUMMARY}}

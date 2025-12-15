@@ -1,0 +1,48 @@
+# ===============================
+# Prometheus Deployment + ConfigMap (Template)
+# ===============================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{APP_NAME}}
+  namespace: {{NAMESPACE}}
+  labels:
+    app: prometheus
+spec:
+  replicas: {{REPLICAS}}
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+      - name: prometheus
+        image: {{IMAGE}}
+        args:
+        - "--config.file=/etc/prometheus/prometheus.yml"
+        ports:
+        - containerPort: {{PORT}}
+        volumeMounts:
+        - name: config
+          mountPath: /etc/prometheus
+      volumes:
+      - name: config
+        configMap:
+          name: {{CONFIGMAP_NAME}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{CONFIGMAP_NAME}}
+  namespace: {{NAMESPACE}}
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: {{SCRAPE_INTERVAL}}
+    scrape_configs:
+      - job_name: 'prometheus'
+        static_configs:
+          - targets: ['{{PROM_TARGETS}}']

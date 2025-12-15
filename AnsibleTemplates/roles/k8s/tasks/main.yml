@@ -1,0 +1,17 @@
+---
+- name: Install kubeadm, kubelet and kubectl
+  apt:
+    name:
+      - kubeadm
+      - kubelet
+      - kubectl
+    state: present
+    update_cache: yes
+
+- name: Hold Kubernetes packages
+  apt:
+    name:
+      - kubeadm
+      - kubelet
+      - kubectl
+    state: hold

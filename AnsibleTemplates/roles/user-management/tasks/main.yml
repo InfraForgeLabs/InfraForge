@@ -1,0 +1,13 @@
+---
+- name: Create admin group
+  group:
+    name: admins
+    state: present
+
+- name: Create admin user
+  user:
+    name: devopsadmin
+    groups: admins
+    append: yes
+    shell: /bin/bash
+

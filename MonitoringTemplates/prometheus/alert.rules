@@ -1,0 +1,20 @@
+# ===============================
+# Prometheus Alerting Rules Template
+# ===============================
+groups:
+- name: node.rules
+  rules:
+  - alert: HighNodeCPU
+    expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > {{CPU_THRESHOLD}}
+    for: {{CPU_FOR}}
+    labels: 
+      severity: {{CPU_SEVERITY}}
+    annotations:
+      summary: "High CPU usage on {{ $labels.instance }}"
+  - alert: LowDiskSpace
+    expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} * 100) < {{DISK_THRESHOLD}}
+    for: {{DISK_FOR}}
+    labels:
+      severity: {{DISK_SEVERITY}}
+    annotations:
+      summary: "Low disk space on {{ $labels.instance }}"

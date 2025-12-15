@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# 🌐 InfraForge — Unified CLI Wrapper
+# Free · Local · Open · Forever
+
+INFRAFORGE_BIN_SOURCE="$(readlink -f "${BASH_SOURCE[0]}")"
+INFRAFORGE_BIN_DIR="$(cd "$(dirname "${INFRAFORGE_BIN_SOURCE}")" && pwd)"
+INFRAFORGE_ROOT="$(cd "${INFRAFORGE_BIN_DIR}/.." && pwd)"
+
+if [[ "${INFRAFORGE_ROOT}" == "/usr/local" && -d "/usr/local/InfraForge" ]]; then
+  INFRAFORGE_ROOT="/usr/local/InfraForge"
+  printf "[%s] 📦 Detected global install → Using root: %s\n" "$(date +'%H:%M:%S')" "${INFRAFORGE_ROOT}"
+fi
+
+export INFRAFORGE_ROOT
+export INFRAFORGE_MODE="online"
+export INFRAFORGE_VERSION="v0.9.0"
+INFRAFORGE_STACKS=(terraform ansible docker helm k8s jenkins monitoring security argocd aws)
+
+require() { command -v "$1" >/dev/null 2>&1 || { echo "Missing: $1" >&2; exit 1; }; }
+fatal()   { printf "[%s] ❌ %s\n" "$(date +'%H:%M:%S')" "$*" >&2; exit 1; }
+
+show_help() {
+cat <<EOF
+InfraForge — Unified Infrastructure CLI
+---------------------------------------
+Free · Local · Open · Forever
+
+Usage:
+  infraforge gen <stack> [options]
+  infraforge show <stack> [project]
+  infraforge list
+  infraforge version
+EOF
+}
+
+CMD="${1:-}"
+shift || true
+
+printf "[%s] ⚙️  InfraForge initialized — %s generator mode (%s)\n" \
+  "$(date +'%H:%M:%S')" "${INFRAFORGE_MODE}" "${INFRAFORGE_VERSION}"
+
+ensure_stack_supported() {
+  local stack="$1"
+  for s in "${INFRAFORGE_STACKS[@]}"; do [[ "$s" == "$stack" ]] && return 0; done
+  fatal "Unsupported stack: ${stack}"
+}
+
+cmd_list() { for s in "${INFRAFORGE_STACKS[@]}"; do echo "$s"; done; }
+
+cmd_gen() {
+  local stack="${1:-}"; shift || true
+  [[ -n "${stack}" ]] || fatal "Usage: infraforge gen <stack>"
+  ensure_stack_supported "$stack"
+
+  local script="${INFRAFORGE_ROOT}/lib/scripts/${stack}-gen.sh"
+  [[ -x "$script" ]] || fatal "Generator missing: $script"
+
+  printf "[%s] ⚙️  Running %s generator via InfraForge...\n" "$(date +'%H:%M:%S')" "$stack"
+  if [[ -t 0 && -t 1 ]]; then
+    printf "[%s] 📦 Interactive mode detected → enabling toolkit UI\n" "$(date +'%H:%M:%S')"
+    bash -i "$script" "$@"
+  else
+    bash "$script" "$@" || true
+  fi
+}
+
+cmd_show() {
+  local stack="${1:-}"
+  local project="${2:-}"
+  [[ -n "${stack}" ]] || fatal "Usage: infraforge show <stack> [project]"
+  ensure_stack_supported "$stack"
+  echo "Showing template tree for: ${stack} (${project:-default})"
+}
+
+cmd_version() {
+  echo "InfraForge ${INFRAFORGE_VERSION} (${INFRAFORGE_MODE} mode)"
+  echo "Repository: https://github.com/InfraForgeLabs/InfraForge"
+  echo "Root: ${INFRAFORGE_ROOT}"
+}
+
+case "${CMD}" in
+  gen)        cmd_gen "$@" ;;
+  show)       cmd_show "$@" ;;
+  list)       cmd_list ;;
+  version)    cmd_version ;;
+  -h|--help|"") show_help ;;
+  *) show_help; exit 1 ;;
+esac

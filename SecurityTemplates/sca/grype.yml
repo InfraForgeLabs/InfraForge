@@ -1,0 +1,5 @@
+scanner:
+  name: grype
+  config:
+    output: table
+    fail-on-severity: high

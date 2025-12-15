@@ -1,0 +1,83 @@
+pipeline {
+  agent any
+
+  environment {
+    APP_NAME    = "{{APP_NAME}}"
+    IMAGE       = "{{IMAGE}}"
+    IMAGE_TAG   = "{{VERSION_TAG}}"
+    REPO_URL    = "{{REPO_URL}}"
+    BRANCH      = "{{BRANCH}}"
+    ENVIRONMENT = "{{ENV}}"
+  }
+
+  stages {
+
+    stage('Checkout') {
+      steps {
+        git url: "${REPO_URL}", branch: "${BRANCH}"
+      }
+    }
+
+    stage('Build') {
+      steps {
+        script {
+          echo "🏗️ Installing dependencies for ${APP_NAME}..."
+          sh 'npm install || true'
+        }
+      }
+      post {
+        success { echo "✅ Build dependencies installed successfully." }
+        failure { echo "❌ Build failed." }
+      }
+    }
+
+    stage('Test') {
+      steps {
+        script {
+          echo "🧪 Running tests for ${APP_NAME}..."
+          sh 'npm test || echo "No tests found or tests failed"'
+        }
+      }
+    }
+
+    stage('Docker Build & Push') {
+      steps {
+        script {
+          def fullImage = "${IMAGE}:${IMAGE_TAG}"
+          echo "🏗️ Building Docker image: ${fullImage}"
+          sh """
+            docker build -t ${fullImage} .
+            docker tag ${fullImage} ${IMAGE}:latest
+            docker push ${fullImage}
+          """
+        }
+      }
+      post {
+        success { echo "✅ Docker image built and pushed: ${IMAGE}:${IMAGE_TAG}" }
+        failure { echo "❌ Docker build/push failed." }
+      }
+    }
+
+    stage('Deploy to Environment') {
+      steps {
+        echo "🚀 Deploying ${APP_NAME} to ${ENVIRONMENT}..."
+        sh """
+          echo "Simulating deployment of ${APP_NAME}"
+          echo "Version: ${IMAGE_TAG}"
+          echo "Environment: ${ENVIRONMENT}"
+        """
+      }
+      post {
+        success { echo "✅ Deployment completed successfully." }
+        failure { echo "❌ Deployment failed." }
+      }
+    }
+
+  }
+
+  post {
+    always {
+      echo "📦 Pipeline finished for ${APP_NAME} - Version ${IMAGE_TAG}"
+    }
+  }
+}

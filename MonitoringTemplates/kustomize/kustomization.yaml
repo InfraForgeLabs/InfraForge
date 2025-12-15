@@ -1,0 +1,12 @@
+# ===============================
+# Kustomize kustomization.yaml (Monitoring Stack)
+# ===============================
+resources:
+  - {{PROMETHEUS_DEPLOYMENT}}
+  - {{GRAFANA_DEPLOYMENT}}
+  - {{LOKI_DEPLOYMENT}}
+  - {{ALERTMANAGER_DEPLOYMENT}}
+  - {{NODE_EXPORTER_DAEMONSET}}
+namespace: {{NAMESPACE}}
+commonLabels:
+  app.kubernetes.io/part-of: {{COMMON_LABEL}}

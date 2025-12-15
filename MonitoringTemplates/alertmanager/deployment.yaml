@@ -1,0 +1,49 @@
+# ===============================
+# Alertmanager Deployment + ConfigMap (Slack Integration)
+# ===============================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ALERT_APP_NAME}}
+  namespace: {{NAMESPACE}}
+  labels:
+    app: {{ALERT_APP_NAME}}
+spec:
+  replicas: {{REPLICAS}}
+  selector:
+    matchLabels:
+      app: {{ALERT_APP_NAME}}
+  template:
+    metadata:
+      labels:
+        app: {{ALERT_APP_NAME}}
+    spec:
+      containers:
+      - name: {{ALERT_APP_NAME}}
+        image: {{ALERT_IMAGE}}
+        args: ["--config.file=/etc/alertmanager/config.yaml"]
+        ports:
+        - containerPort: {{PORT}}
+        volumeMounts:
+        - name: config
+          mountPath: /etc/alertmanager
+      volumes:
+      - name: config
+        configMap:
+          name: {{CONFIGMAP_NAME}}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{CONFIGMAP_NAME}}
+  namespace: {{NAMESPACE}}
+data:
+  config.yaml: |
+    route:
+      receiver: '{{RECEIVER_NAME}}'
+    receivers:
+    - name: '{{RECEIVER_NAME}}'
+      slack_configs:
+      - api_url: '{{SLACK_API_URL}}'
+        channel: '{{SLACK_CHANNEL}}'

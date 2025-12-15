@@ -1,0 +1,19 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Pod Restarts",
+      "targets": [
+        {
+          "expr": "sum(rate(kube_pod_container_status_restarts_total[5m]))"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 36,
+  "version": 1,
+  "title": "Kubernetes Overview"
+}

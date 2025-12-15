@@ -1,0 +1,100 @@
+# ============================================================
+# 🧩 Argo CD Addon: Image Updater (Templated)
+# Deploys the Argo CD Image Updater controller which monitors
+# Application annotations and automatically updates image tags.
+# ============================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ARGO_NAMESPACE}}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argocd-image-updater
+  namespace: {{ARGO_NAMESPACE}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-image-updater
+  namespace: {{ARGO_NAMESPACE}}
+  labels:
+    app.kubernetes.io/name: argocd-image-updater
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-image-updater
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: argocd-image-updater
+    spec:
+      serviceAccountName: argocd-image-updater
+      containers:
+        - name: argocd-image-updater
+          image: quay.io/argoprojlabs/argocd-image-updater:{{IMAGE_UPDATER_VERSION}}
+          imagePullPolicy: IfNotPresent
+          args: ["run"]
+          env:
+            # --- ArgoCD connection ---
+            - name: ARGOCD_GRPC_WEB
+              value: "{{ARGOCD_SERVER}}"
+            - name: ARGOCD_INSECURE
+              value: "{{ARGOCD_INSECURE}}"
+
+            # --- Git Write-back for GitOps ---
+            - name: GIT_WRITE_BACK_METHOD
+              value: "git"
+            - name: GIT_USER
+              value: "{{GIT_USER}}"
+            - name: GIT_EMAIL
+              value: "{{GIT_EMAIL}}"
+            - name: GIT_BRANCH
+              value: "{{GIT_BRANCH}}"
+
+            # --- Logging ---
+            - name: LOG_LEVEL
+              value: "{{LOG_LEVEL}}"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-image-updater-config
+  namespace: {{ARGO_NAMESPACE}}
+data:
+  config.yaml: |
+    logLevel: {{LOG_LEVEL}}
+    registries:
+      - name: ghcr
+        api_url: https://ghcr.io
+        prefix: ghcr.io
+    git:
+      write_back_method: git
+      user: {{GIT_USER}}
+      email: {{GIT_EMAIL}}
+      branch: {{GIT_BRANCH}}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: argocd-image-updater
+rules:
+  - apiGroups: ["argoproj.io"]
+    resources: ["applications", "appprojects"]
+    verbs: ["get", "list", "watch", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: argocd-image-updater
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: argocd-image-updater
+subjects:
+  - kind: ServiceAccount
+    name: argocd-image-updater
+    namespace: {{ARGO_NAMESPACE}}

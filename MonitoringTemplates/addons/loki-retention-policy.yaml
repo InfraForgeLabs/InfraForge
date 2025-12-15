@@ -1,0 +1,11 @@
+# ===============================
+# Monitoring Retention Config (Addon Template)
+# ===============================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{APP_NAME}}
+  namespace: {{NAMESPACE}}
+data:
+  limits_config: |
+    retention_period: {{RETENTION_PERIOD}}
