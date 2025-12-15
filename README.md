@@ -13,6 +13,15 @@ The public domain will go live on **January 26, 2026 🇮🇳** under the *Free 
 
 ![InfraForge Banner](assets/banner.png)
 
+---
+## 🔐 Official Ownership & Identity
+
+InfraForge is an open-source infrastructure automation and DevSecOps platform developed and maintained by InfraForge Labs.
+
+🌐 **Official Website:** [https://infraforge.infraforgelabs.in](https://infraforge.infraforgelabs.in)
+🏢 **Organization:** [https://infraforgelabs.in](https://infraforgelabs.in)
+---
+
 <!-- 🌐 Global Project Badges -->
 
 [![Terraform Templates](https://img.shields.io/badge/Terraform-Templates-7B42BC?logo=terraform\&logoColor=white)](https://github.com/gauravchile/InfraForge/tree/main/TerraformTemplates) [![Ansible Templates](https://img.shields.io/badge/Ansible-Playbooks-EE0000?logo=ansible\&logoColor=white)](https://github.com/gauravchile/InfraForge/tree/main/AnsibleTemplates) [![Docker Templates](https://img.shields.io/badge/Docker-Templates-2496ED?logo=docker\&logoColor=white)](https://github.com/gauravchile/InfraForge/tree/main/DockerTemplates) [![Helm Charts](https://img.shields.io/badge/Helm-Charts-0F1689?logo=helm\&logoColor=white)](https://github.com/gauravchile/InfraForge/tree/main/HelmTemplates) [![Kubernetes YAMLs](https://img.shields.io/badge/Kubernetes-YAMLs-326CE5?logo=kubernetes\&logoColor=white)](https://github.com/gauravchile/InfraForge/tree/main/K8sYamlTemplates) [![Argo CD](https://img.shields.io/badge/ArgoCD-GitOps-EF7B4D?logo=argo\&logoColor=white)](https://github.com/gauravchile/InfraForge/tree/main/ArgoCDTemplates) [![Jenkins Pipelines](https://img.shields.io/badge/Jenkins-Pipelines-D24939?logo=jenkins\&logoColor=white)](https://github.com/gauravchile/InfraForge/tree/main/JenkinsTemplates) [![Security Templates](https://img.shields.io/badge/Security-Templates-FF0000?logo=security\&logoColor=white)](https://github.com/gauravchile/InfraForge/tree/main/SecurityTemplates) [![Prometheus](https://img.shields.io/badge/Prometheus-Monitoring-E6522C?logo=prometheus\&logoColor=white)](https://github.com/gauravchile/InfraForge/tree/main/MonitoringTemplates) [![Grafana](https://img.shields.io/badge/Grafana-Dashboards-F46800?logo=grafana\&logoColor=white)](https://github.com/gauravchile/InfraForge/tree/main/MonitoringTemplates) [![Loki](https://img.shields.io/badge/Loki-Logs-00BFAE?logo=grafana\&logoColor=white)](https://github.com/gauravchile/InfraForge/tree/main/MonitoringTemplates) [![AWS Toolkit](https://img.shields.io/badge/AWS-Toolkit-FF9900?logo=amazon-aws\&logoColor=white)](https://github.com/gauravchile/InfraForge/tree/main/AWSToolkit)
