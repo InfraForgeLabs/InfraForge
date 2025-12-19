@@ -12,8 +12,7 @@
   <meta name="author" content="InfraForge Labs" />
   <meta name="theme-color" content="#0d1117" />
 
-  <!-- Canonical -->
-  <link rel="canonical" href="https://<username>.github.io/InfraForge/" />
+  <link rel="canonical" href="https://infraforgelabs.github.io/InfraForge/" />
 
   <!-- Open Graph -->
   <meta property="og:title" content="InfraForge — Infrastructure Automation Platform" />
@@ -45,98 +44,184 @@
   }
   </script>
 
+  <!-- SEO: FAQ Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is InfraForge free?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. InfraForge is 100% free and open-source under the MIT License."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is InfraForge cloud-dependent?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. InfraForge is local-first and does not require cloud access to operate."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "When does InfraForge require internet access?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Internet access is only required for pulling or updating infrastructure templates from upstream sources. All generation and execution happen locally."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does InfraForge deploy infrastructure automatically?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. InfraForge requires explicit user confirmation before executing any infrastructure deployment."
+        }
+      }
+    ]
+  }
+  </script>
+
   <style>
     :root {
-      --bg: #0d1117;
-      --fg: #c9d1d9;
-      --accent: #58a6ff;
-      --muted: #8b949e;
+      --bg:#0d1117;
+      --fg:#c9d1d9;
+      --accent:#58a6ff;
+      --muted:#8b949e;
+      --border:#1f2933;
+      --radius:12px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing:border-box; }
 
     body {
-      background: var(--bg);
-      color: var(--fg);
-      font-family: "Segoe UI", Roboto, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      text-align: center;
-      padding: 2rem;
+      background:var(--bg);
+      color:var(--fg);
+      font-family:"Segoe UI",Roboto,sans-serif;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      min-height:100vh;
+      text-align:center;
+      padding:2rem;
     }
 
     .logo {
-      width: 120px;
-      height: auto;
-      margin-bottom: 1.2rem;
-      filter: drop-shadow(0 0 12px rgba(88,166,255,0.35));
+      width:120px;
+      margin-bottom:1.2rem;
+      filter:drop-shadow(0 0 12px rgba(88,166,255,.35));
     }
 
     h1 {
-      color: var(--accent);
-      font-size: 2.4rem;
-      margin-bottom: 0.4em;
+      color:var(--accent);
+      font-size:2.4rem;
+      margin-bottom:.4em;
     }
 
     h2 {
-      font-weight: 500;
-      margin-bottom: 0.8em;
+      font-weight:500;
+      margin-bottom:.8em;
     }
 
     p {
-      font-size: 1.05rem;
-      line-height: 1.6;
-      max-width: 720px;
-      color: var(--muted);
-      margin-bottom: 0.8rem;
+      font-size:1.05rem;
+      line-height:1.6;
+      max-width:720px;
+      color:var(--muted);
+      margin-bottom:.8rem;
     }
 
     .divider {
-      width: 100px;
-      height: 2px;
-      background: var(--accent);
-      margin: 1.5rem 0;
-      border-radius: 2px;
+      width:100px;
+      height:2px;
+      background:var(--accent);
+      margin:1.5rem 0;
+      border-radius:2px;
     }
 
     a {
-      color: var(--accent);
-      text-decoration: none;
-      font-weight: 600;
+      color:var(--accent);
+      text-decoration:none;
+      font-weight:600;
     }
 
-    a:hover {
-      text-decoration: underline;
+    a:hover { text-decoration:underline; }
+
+    /* Release badge */
+    .release-badge {
+      margin:1rem 0 1.5rem;
+      padding:10px 18px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:#161b22;
+      font-weight:600;
+      color:var(--fg);
+    }
+
+    .info-buttons {
+      margin-top:1.8rem;
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+
+    .info-buttons button {
+      background:transparent;
+      border:1px solid var(--border);
+      color:var(--fg);
+      padding:10px 18px;
+      border-radius:var(--radius);
+      cursor:pointer;
+      font-weight:600;
+    }
+
+    .section {
+      display:none;
+      max-width:760px;
+      margin:3rem auto 1rem;
+      text-align:left;
+    }
+
+    .section.active { display:block; }
+
+    .section h3 {
+      text-align:center;
+      color:var(--accent);
+      margin-bottom:1.2rem;
+    }
+
+    details {
+      background:#161b22;
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:14px 18px;
+      margin-bottom:12px;
+    }
+
+    summary {
+      font-weight:600;
+      cursor:pointer;
     }
 
     footer {
-      margin-top: 2.5rem;
-      font-size: 0.9rem;
-      color: var(--muted);
+      margin-top:2.5rem;
+      font-size:.9rem;
+      color:var(--muted);
     }
 
-    .flag {
-      font-size: 1.2em;
-      margin-left: 4px;
-    }
+    .flag { font-size:1.2em; margin-left:4px; }
   </style>
 </head>
 
 <body>
 
-  <!-- InfraForge Logo -->
-  <img
-    src="assets/logo.png"
-    alt="InfraForge Logo"
-    class="logo"
-  />
+  <img src="assets/logo.png" alt="InfraForge Logo" class="logo" />
 
   <h1>InfraForge</h1>
   <h2>Open-Source Infrastructure Automation Platform</h2>
@@ -150,8 +235,12 @@
     while remaining fully local and user-controlled.
   </p>
 
+  <!-- Release countdown badge -->
+  <div class="release-badge">
+    🚀 Public Release: January 26, 2026 <span class="flag">🇮🇳</span>
+  </div>
+
   <p>
-    <strong>Public release:</strong> January 26, 2026 <span class="flag">🇮🇳</span><br />
     <strong>Status:</strong> v0.9.0 (pre-release)
   </p>
 
@@ -163,15 +252,75 @@
     Licensed under the <strong>MIT License</strong>
   </p>
 
-  <p>
-    📘 <a href="./docs/">Documentation</a> (coming soon) ·
-    💬 <a href="https://github.com/InfraForgeLabs/InfraForge/discussions">Community</a>
-  </p>
+  <div class="info-buttons">
+    <button onclick="toggleSection('faq')">❓ FAQ</button>
+    <button onclick="toggleSection('privacy')">🔒 Privacy & Data</button>
+  </div>
+
+  <!-- FAQ -->
+  <section id="faq" class="section">
+    <h3>Frequently Asked Questions</h3>
+
+    <details>
+      <summary>Is InfraForge free?</summary>
+      <p>Yes. InfraForge is 100% free and open-source under the MIT License.</p>
+    </details>
+
+    <details>
+      <summary>Does InfraForge deploy infrastructure automatically?</summary>
+      <p>
+        InfraForge generates templates locally.
+        Actual deployment requires explicit user confirmation.
+      </p>
+    </details>
+
+    <details>
+      <summary>Is InfraForge cloud-dependent?</summary>
+      <p>No. InfraForge is local-first and does not require cloud access to operate.</p>
+    </details>
+
+    <details>
+      <summary>When does InfraForge require internet access?</summary>
+      <p>
+        Internet access is used only for pulling or updating infrastructure templates from upstream sources.
+        All generation and execution happen locally on your machine.
+      </p>
+    </details>
+  </section>
+
+  <!-- PRIVACY -->
+  <section id="privacy" class="section">
+    <h3>Privacy & Data</h3>
+
+    <details>
+      <summary>Does InfraForge collect any data?</summary>
+      <p>No. InfraForge does not collect, track, or transmit user data.</p>
+    </details>
+
+    <details>
+      <summary>Does InfraForge require accounts or login?</summary>
+      <p>No accounts, no telemetry, no analytics. Everything runs locally.</p>
+    </details>
+
+    <details>
+      <summary>Is any data sent to InfraForge Labs?</summary>
+      <p>No. InfraForge never sends user data to InfraForge Labs or third parties.</p>
+    </details>
+  </section>
 
   <footer>
     © 2026 <strong>InfraForge Labs</strong><br />
     <em>Free · Local · Open · Forever</em>
   </footer>
+
+  <script>
+    function toggleSection(id) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      const el = document.getElementById(id);
+      el.classList.add('active');
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
 
 </body>
 </html>
