@@ -12,29 +12,6 @@
   <meta name="author" content="InfraForge Labs" />
   <meta name="theme-color" content="#0d1117" />
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="InfraForge — Local-First Infrastructure Automation" />
-  <meta property="og:description"
-    content="Generate, validate, plan, and deploy infrastructure safely — without SaaS lock-in." />
-  <meta property="og:type" content="website" />
-
-  <!-- Schema.org -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "InfraForge",
-    "applicationCategory": "DeveloperTool",
-    "operatingSystem": "Linux (Debian, Ubuntu, RHEL, CentOS, Rocky, Alma)",
-    "softwareVersion": "1.0.0",
-    "description": "InfraForge is a local-first infrastructure automation and DevSecOps platform designed for safe, user-controlled execution.",
-    "publisher": {
-      "@type": "Organization",
-      "name": "InfraForge Labs"
-    }
-  }
-  </script>
-
   <style>
     :root {
       --bg:#0d1117;
@@ -60,7 +37,7 @@
 
     h1 { color:var(--accent); font-size:2.4rem; margin-bottom:.3em; }
     h2 { font-weight:500; margin-bottom:1rem; }
-    h3 { color:var(--accent); margin-top:3rem; }
+    h3 { color:var(--accent); margin-bottom:1rem; }
 
     p {
       max-width:760px;
@@ -87,9 +64,39 @@
       margin:1.4rem 0;
     }
 
+    /* NAV BUTTONS */
+    .nav-buttons {
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      justify-content:center;
+      margin:2rem 0;
+    }
+
+    .nav-buttons button {
+      background:transparent;
+      border:1px solid var(--border);
+      color:var(--fg);
+      padding:10px 18px;
+      border-radius:var(--radius);
+      font-weight:600;
+      cursor:pointer;
+    }
+
+    .nav-buttons button:hover {
+      border-color:var(--accent);
+    }
+
+    /* SECTIONS */
     .section {
+      display:none;
       max-width:900px;
       margin-top:3rem;
+      text-align:left;
+    }
+
+    .section.active {
+      display:block;
     }
 
     .card {
@@ -97,8 +104,7 @@
       border:1px solid var(--border);
       border-radius:var(--radius);
       padding:1.2rem;
-      margin:1rem auto;
-      text-align:left;
+      margin:1rem 0;
     }
 
     pre {
@@ -107,15 +113,14 @@
       border-radius:var(--radius);
       padding:1rem;
       overflow:auto;
-      text-align:left;
       color:var(--fg);
     }
 
-    button {
+    .download-btn {
       background:transparent;
       border:1px solid var(--border);
       color:var(--fg);
-      padding:10px 18px;
+      padding:12px 22px;
       border-radius:var(--radius);
       font-weight:600;
       cursor:not-allowed;
@@ -147,14 +152,19 @@
   </div>
 
   <p><strong>Status:</strong> v1.0.0 (Pre-release)</p>
+  <p><strong>Platform:</strong> Linux only — Debian & CentOS family</p>
 
-  <div class="section">
-    <h3>Platform Support</h3>
-    <p><strong>Linux only</strong> — Debian & CentOS family</p>
-    <p>Tested on Debian, Ubuntu, RHEL, CentOS, Rocky Linux, and AlmaLinux.</p>
+  <!-- NAVIGATION BUTTONS -->
+  <div class="nav-buttons">
+    <button onclick="showSection('features')">What InfraForge Does</button>
+    <button onclick="showSection('quickstart')">Quickstart</button>
+    <button onclick="showSection('roadmap')">Roadmap</button>
+    <button onclick="showSection('download')">Download</button>
+    <button onclick="showSection('licensing')">Licensing</button>
   </div>
 
-  <div class="section">
+  <!-- FEATURES -->
+  <section id="features" class="section">
     <h3>What InfraForge Does</h3>
 
     <div class="card">
@@ -176,31 +186,26 @@
       <strong>Controlled Execution</strong>
       <p>No automatic deployment. Every action requires explicit user confirmation.</p>
     </div>
-  </div>
+  </section>
 
-  <div class="section">
+  <!-- QUICKSTART -->
+  <section id="quickstart" class="section">
     <h3>Quickstart</h3>
 
     <p><em>Linux only (Debian & CentOS family).</em></p>
 
     <pre>
-# Initialize a project
 infraforge init
-
-# Generate templates
 infraforge gen terraform
-
-# Validate configuration
 infraforge check
-
-# Preview changes
 infraforge blueprint
     </pre>
 
     <p>No deployment happens without explicit confirmation.</p>
-  </div>
+  </section>
 
-  <div class="section">
+  <!-- ROADMAP -->
+  <section id="roadmap" class="section">
     <h3>Roadmap</h3>
 
     <p>
@@ -227,22 +232,26 @@ infraforge blueprint
       <strong>Language & Intelligence</strong>
       <p>Higher-level infrastructure intent and optional embedded reasoning.</p>
     </div>
-  </div>
+  </section>
 
-  <div class="section">
+  <!-- DOWNLOAD -->
+  <section id="download" class="section">
     <h3>Download</h3>
 
     <p>InfraForge is currently in pre-release.</p>
 
-    <button disabled>Download InfraForge (Linux)</button>
+    <button class="download-btn" disabled>
+      Download InfraForge (Linux)
+    </button>
 
     <p class="muted">
       Linux installers for Debian and CentOS-based distributions
       will be available on January 26, 2026.
     </p>
-  </div>
+  </section>
 
-  <div class="section">
+  <!-- LICENSING -->
+  <section id="licensing" class="section">
     <h3>Licensing</h3>
 
     <p>
@@ -250,12 +259,23 @@ infraforge blueprint
       From v2.0.0 onward, InfraForge follows a freemium model with
       a free core and optional paid features for teams and enterprises.
     </p>
-  </div>
+  </section>
 
   <footer>
     © 2025 InfraForge Labs<br />
     <em>Local · User-Controlled · Professional-Grade</em>
   </footer>
+
+  <script>
+    function showSection(id) {
+      document.querySelectorAll('.section')
+        .forEach(sec => sec.classList.remove('active'));
+
+      const el = document.getElementById(id);
+      el.classList.add('active');
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
 
 </body>
 </html>
