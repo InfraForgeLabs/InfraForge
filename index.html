@@ -35,6 +35,13 @@
       text-align:center;
     }
 
+    /* LOGO */
+    .logo {
+      width:96px;
+      height:auto;
+      margin-bottom:1rem;
+    }
+
     h1 { color:var(--accent); font-size:2.4rem; margin-bottom:.3em; }
     h2 { font-weight:500; margin-bottom:1rem; }
     h3 { color:var(--accent); margin-bottom:1rem; }
@@ -131,11 +138,19 @@
       margin-top:4rem;
       font-size:.9rem;
       color:var(--muted);
+      text-align:center;
     }
   </style>
 </head>
 
 <body>
+
+  <!-- LOGO -->
+  <img
+    src="https://raw.githubusercontent.com/InfraForgeLabs/InfraForge/docs/assets/logo.png"
+    alt="InfraForge Logo"
+    class="logo"
+  />
 
   <h1>InfraForge</h1>
   <h2>Local-First Infrastructure Automation</h2>
@@ -168,40 +183,63 @@
     <h3>What InfraForge Does</h3>
 
     <div class="card">
-      <strong>Template Generation</strong>
-      <p>Terraform, Docker, Helm, Jenkins, Security, and GitOps templates.</p>
-    </div>
+  <strong>Template Generation</strong>
+  <p>
+    Use <code>infraforge gen &lt;stack&gt;</code> to generate templates for a specific stack
+    (Terraform, Docker, Helm, Jenkins, Security, GitOps) based on the current project configuration.
+  </p>
+</div>
 
-    <div class="card">
-      <strong>Validation & Safety</strong>
-      <p>Configuration checks, placeholder validation, and pre-deployment safety gates.</p>
-    </div>
+<div class="card">
+  <strong>Inspection & Review</strong>
+  <p>
+    Use <code>infraforge show &lt;stack&gt;</code> to inspect generated templates
+    without deploying or modifying any infrastructure.
+  </p>
+</div>
 
-    <div class="card">
-      <strong>Blueprint & Planning</strong>
-      <p>Dry-run workflows to preview changes before execution.</p>
-    </div>
+<div class="card">
+  <strong>Discovery</strong>
+  <p>
+    Use <code>infraforge list</code> to view all supported stacks and generators
+    available in the current InfraForge installation.
+  </p>
+</div>
 
-    <div class="card">
-      <strong>Controlled Execution</strong>
-      <p>No automatic deployment. Every action requires explicit user confirmation.</p>
-    </div>
+<div class="card">
+  <strong>Version Awareness</strong>
+  <p>
+    Use <code>infraforge version</code> to check the installed InfraForge version
+    and build information.
+  </p>
+</div>
+
   </section>
 
   <!-- QUICKSTART -->
   <section id="quickstart" class="section">
     <h3>Quickstart</h3>
 
-    <p><em>Linux only (Debian & CentOS family).</em></p>
+    <p><em>Linux only (Debian & Rhel family).</em></p>
 
     <pre>
-infraforge init
-infraforge gen terraform
-infraforge check
-infraforge blueprint
+  infraforge gen <stack> [options]
+  # Generate production-ready templates for the selected stack
+  # (e.g. terraform, docker, helm, jenkins) based on the current project configuration
+
+  infraforge show <stack> [project]
+  # Display the generated templates for a stack without modifying or deploying anything
+  # Useful for review, debugging, and understanding what InfraForge will produce
+
+  infraforge list
+  # List all supported stacks and generators available in the current InfraForge installation
+
+  infraforge version
+  # Show the currently installed InfraForge version and build information
+
     </pre>
 
-    <p>No deployment happens without explicit confirmation.</p>
+    <p>No deployment happens.</p>
   </section>
 
   <!-- ROADMAP -->
