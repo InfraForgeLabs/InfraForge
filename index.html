@@ -4,84 +4,34 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>InfraForge — Infrastructure Automation Platform | InfraForge Labs</title>
+  <title>InfraForge — Local-First Infrastructure Automation</title>
 
   <meta name="description"
-    content="InfraForge is a free, local-first infrastructure automation and DevSecOps platform by InfraForge Labs. Designed for offline, user-controlled execution. Free, local-first. Public launch January 26, 2026." />
+    content="InfraForge is a local-first infrastructure automation and DevSecOps platform by InfraForge Labs. Designed for safe, user-controlled execution without SaaS lock-in." />
 
   <meta name="author" content="InfraForge Labs" />
   <meta name="theme-color" content="#0d1117" />
 
-  <link rel="canonical" href="https://infraforgelabs.github.io/InfraForge/" />
-
   <!-- Open Graph -->
-  <meta property="og:title" content="InfraForge — Infrastructure Automation Platform" />
+  <meta property="og:title" content="InfraForge — Local-First Infrastructure Automation" />
   <meta property="og:description"
-      content="InfraForge is a free, local-first infrastructure automation platform by InfraForge Labs. Built for offline, user-controlled execution." />
+    content="Generate, validate, plan, and deploy infrastructure safely — without SaaS lock-in." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://infraforgelabs.github.io/InfraForge/" />
 
-  <!-- SoftwareApplication Schema -->
+  <!-- Schema.org -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": "InfraForge",
     "applicationCategory": "DeveloperTool",
-    "operatingSystem": "Linux, macOS",
+    "operatingSystem": "Linux (Debian, Ubuntu, RHEL, CentOS, Rocky, Alma)",
     "softwareVersion": "1.0.0",
-    "description": "InfraForge is a free, local-first infrastructure automation and DevSecOps platform designed for offline, user-controlled execution."
+    "description": "InfraForge is a local-first infrastructure automation and DevSecOps platform designed for safe, user-controlled execution.",
     "publisher": {
       "@type": "Organization",
-      "name": "InfraForge Labs",
-      "url": "https://infraforgelabs.in"
-    },
-    "sameAs": ["https://infraforgelabs.in"]
-    
-    "releaseNotes": "Public release scheduled for January 26, 2026"
-  }
-  </script>
-
-  <!-- SEO: FAQ Schema -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "Is InfraForge free?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes. InfraForge provides free, local-first core functionality for learning and infrastructure design."
-
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Is InfraForge cloud-dependent?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "No. InfraForge is local-first and does not require cloud access to operate."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "When does InfraForge require internet access?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Internet access is only required for pulling or updating infrastructure templates from upstream sources. All generation and execution happen locally."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Does InfraForge deploy infrastructure automatically?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "No. InfraForge requires explicit user confirmation before executing any infrastructure deployment."
-        }
-      }
-    ]
+      "name": "InfraForge Labs"
+    }
   }
   </script>
 
@@ -100,226 +50,212 @@
     body {
       background:var(--bg);
       color:var(--fg);
-      font-family:"Segoe UI",Roboto,sans-serif;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
       display:flex;
       flex-direction:column;
       align-items:center;
-      justify-content:center;
-      min-height:100vh;
-      text-align:center;
       padding:2rem;
+      text-align:center;
     }
 
-    .logo {
-      width:120px;
-      margin-bottom:1.2rem;
-      filter:drop-shadow(0 0 12px rgba(88,166,255,.35));
-    }
-
-    h1 {
-      color:var(--accent);
-      font-size:2.4rem;
-      margin-bottom:.4em;
-    }
-
-    h2 {
-      font-weight:500;
-      margin-bottom:.8em;
-    }
+    h1 { color:var(--accent); font-size:2.4rem; margin-bottom:.3em; }
+    h2 { font-weight:500; margin-bottom:1rem; }
+    h3 { color:var(--accent); margin-top:3rem; }
 
     p {
-      font-size:1.05rem;
+      max-width:760px;
       line-height:1.6;
-      max-width:720px;
       color:var(--muted);
-      margin-bottom:.8rem;
+      margin:.6rem auto;
     }
 
     .divider {
-      width:100px;
+      width:90px;
       height:2px;
       background:var(--accent);
-      margin:1.5rem 0;
+      margin:1.6rem auto;
       border-radius:2px;
     }
 
-    a {
-      color:var(--accent);
-      text-decoration:none;
-      font-weight:600;
-    }
-
-    a:hover { text-decoration:underline; }
-
-    /* Release badge */
-    .release-badge {
-      margin:1rem 0 1.5rem;
+    .badge {
+      display:inline-block;
       padding:10px 18px;
       border:1px solid var(--border);
       border-radius:999px;
       background:#161b22;
       font-weight:600;
+      margin:1.4rem 0;
+    }
+
+    .section {
+      max-width:900px;
+      margin-top:3rem;
+    }
+
+    .card {
+      background:#161b22;
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:1.2rem;
+      margin:1rem auto;
+      text-align:left;
+    }
+
+    pre {
+      background:#161b22;
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:1rem;
+      overflow:auto;
+      text-align:left;
       color:var(--fg);
     }
 
-    .info-buttons {
-      margin-top:1.8rem;
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      justify-content:center;
-    }
-
-    .info-buttons button {
+    button {
       background:transparent;
       border:1px solid var(--border);
       color:var(--fg);
       padding:10px 18px;
       border-radius:var(--radius);
-      cursor:pointer;
       font-weight:600;
-    }
-
-    .section {
-      display:none;
-      max-width:760px;
-      margin:3rem auto 1rem;
-      text-align:left;
-    }
-
-    .section.active { display:block; }
-
-    .section h3 {
-      text-align:center;
-      color:var(--accent);
-      margin-bottom:1.2rem;
-    }
-
-    details {
-      background:#161b22;
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      padding:14px 18px;
-      margin-bottom:12px;
-    }
-
-    summary {
-      font-weight:600;
-      cursor:pointer;
+      cursor:not-allowed;
+      margin-top:1rem;
     }
 
     footer {
-      margin-top:2.5rem;
+      margin-top:4rem;
       font-size:.9rem;
       color:var(--muted);
     }
-
-    .flag { font-size:1.2em; margin-left:4px; }
   </style>
 </head>
 
 <body>
 
-  <img src="assets/logo.png" alt="InfraForge Logo" class="logo" />
-
   <h1>InfraForge</h1>
-  <h2>Local-First Infrastructure Automation Platform</h2>
+  <h2>Local-First Infrastructure Automation</h2>
 
   <div class="divider"></div>
 
   <p>
-    <strong>InfraForge</strong> is a free, local-first infrastructure automation and DevSecOps platform
-    developed by <a href="https://infraforgelabs.in"><strong>InfraForge Labs</strong></a>.
-    It unifies infrastructure provisioning, CI/CD, security, and GitOps workflows —
-    while remaining fully local and user-controlled.
+    <strong>InfraForge</strong> is a local-first infrastructure automation and DevSecOps platform
+    designed for engineers who want control, safety, and transparency — without SaaS lock-in.
   </p>
 
-  <!-- Release countdown badge -->
-  <div class="release-badge">
-    🚀 Public Release: January 26, 2026 <span class="flag">🇮🇳</span>
+  <div class="badge">
+    🚀 Public Release: January 26, 2026
   </div>
 
-  <p>
-    <strong>Status:</strong> v0.9.0 (pre-release)
-  </p>
+  <p><strong>Status:</strong> v1.0.0 (Pre-release)</p>
 
-  <p>
-    <a href="/downloads/infraforge">→ Download InfraForge</a>
-  </p>
-
-  <p>
-    Licensed under the InfraForge Labs commercial license
-  </p>
-
-  <div class="info-buttons">
-    <button onclick="toggleSection('faq')">❓ FAQ</button>
-    <button onclick="toggleSection('privacy')">🔒 Privacy & Data</button>
+  <div class="section">
+    <h3>Platform Support</h3>
+    <p><strong>Linux only</strong> — Debian & CentOS family</p>
+    <p>Tested on Debian, Ubuntu, RHEL, CentOS, Rocky Linux, and AlmaLinux.</p>
   </div>
 
-  <!-- FAQ -->
-  <section id="faq" class="section">
-    <h3>Frequently Asked Questions</h3>
+  <div class="section">
+    <h3>What InfraForge Does</h3>
 
-    <details>
-      <summary>Is InfraForge free?</summary>
-      <p>Yes. InfraForge is 100% free and open-source under the MIT License.</p>
-    </details>
+    <div class="card">
+      <strong>Template Generation</strong>
+      <p>Terraform, Docker, Helm, Jenkins, Security, and GitOps templates.</p>
+    </div>
 
-    <details>
-      <summary>Does InfraForge deploy infrastructure automatically?</summary>
-      <p>
-        InfraForge generates templates locally.
-        Actual deployment requires explicit user confirmation.
-      </p>
-    </details>
+    <div class="card">
+      <strong>Validation & Safety</strong>
+      <p>Configuration checks, placeholder validation, and pre-deployment safety gates.</p>
+    </div>
 
-    <details>
-      <summary>Is InfraForge cloud-dependent?</summary>
-      <p>No. InfraForge is local-first and does not require cloud access to operate.</p>
-    </details>
+    <div class="card">
+      <strong>Blueprint & Planning</strong>
+      <p>Dry-run workflows to preview changes before execution.</p>
+    </div>
 
-    <details>
-      <summary>When does InfraForge require internet access?</summary>
-      <p>
-        Internet access is used only for pulling or updating infrastructure templates from upstream sources.
-        All generation and execution happen locally on your machine.
-      </p>
-    </details>
-  </section>
+    <div class="card">
+      <strong>Controlled Execution</strong>
+      <p>No automatic deployment. Every action requires explicit user confirmation.</p>
+    </div>
+  </div>
 
-  <!-- PRIVACY -->
-  <section id="privacy" class="section">
-    <h3>Privacy & Data</h3>
+  <div class="section">
+    <h3>Quickstart</h3>
 
-    <details>
-      <summary>Does InfraForge collect any data?</summary>
-      <p>No. InfraForge does not collect, track, or transmit user data.</p>
-    </details>
+    <p><em>Linux only (Debian & CentOS family).</em></p>
 
-    <details>
-      <summary>Does InfraForge require accounts or login?</summary>
-      <p>No accounts, no telemetry, no analytics. Everything runs locally.</p>
-    </details>
+    <pre>
+# Initialize a project
+infraforge init
 
-    <details>
-      <summary>Is any data sent to InfraForge Labs?</summary>
-      <p>No. InfraForge never sends user data to InfraForge Labs or third parties.</p>
-    </details>
-  </section>
+# Generate templates
+infraforge gen terraform
+
+# Validate configuration
+infraforge check
+
+# Preview changes
+infraforge blueprint
+    </pre>
+
+    <p>No deployment happens without explicit confirmation.</p>
+  </div>
+
+  <div class="section">
+    <h3>Roadmap</h3>
+
+    <p>
+      InfraForge is built with a long-term vision.
+      This roadmap reflects current direction, not guaranteed delivery timelines.
+    </p>
+
+    <div class="card">
+      <strong>Foundation</strong>
+      <p>Local-first generation, validation, and core workflows.</p>
+    </div>
+
+    <div class="card">
+      <strong>Integration & Validation</strong>
+      <p>CI/CD expansion, multi-cloud IaC support, stronger safety checks.</p>
+    </div>
+
+    <div class="card">
+      <strong>Orchestration</strong>
+      <p>Unified CLI workflows, dry-run planning, rollback, and auditability.</p>
+    </div>
+
+    <div class="card">
+      <strong>Language & Intelligence</strong>
+      <p>Higher-level infrastructure intent and optional embedded reasoning.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Download</h3>
+
+    <p>InfraForge is currently in pre-release.</p>
+
+    <button disabled>Download InfraForge (Linux)</button>
+
+    <p class="muted">
+      Linux installers for Debian and CentOS-based distributions
+      will be available on January 26, 2026.
+    </p>
+  </div>
+
+  <div class="section">
+    <h3>Licensing</h3>
+
+    <p>
+      InfraForge is free to use through <strong>v2.0.0</strong>.
+      From v2.0.0 onward, InfraForge follows a freemium model with
+      a free core and optional paid features for teams and enterprises.
+    </p>
+  </div>
 
   <footer>
-    © 2025 <strong>InfraForge Labs</strong><br />
-    <em>Free · Local · User-Owned · Forever</em>
+    © 2025 InfraForge Labs<br />
+    <em>Local · User-Controlled · Professional-Grade</em>
   </footer>
-
-  <script>
-    function toggleSection(id) {
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      const el = document.getElementById(id);
-      el.classList.add('active');
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
-  </script>
 
 </body>
 </html>
