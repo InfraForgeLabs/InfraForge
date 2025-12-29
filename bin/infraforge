@@ -1,3 +1,4 @@
+dmin@DESKTOP-67B57TV:~/InfraForge$ cat bin/infraforge
 #!/usr/bin/env bash
 set -euo pipefail
 
