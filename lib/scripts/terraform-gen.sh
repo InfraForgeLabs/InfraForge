@@ -2,7 +2,7 @@
 set -euo pipefail
 
 REPO_URL="https://raw.githubusercontent.com/InfraForgeLabs/InfraForge/main/TerraformTemplates"
-OUT_DIR="generated"
+OUT_DIR="${HOME:?HOME is not set}/InfraForge/terraform-templates"
 CACHE_DIR=".cache/terraform-templates"
 mkdir -p "$OUT_DIR" "$CACHE_DIR"
 
@@ -12,6 +12,16 @@ info()    { echo -e "\033[1;34m[$(timestamp)] $1\033[0m"; }
 success() { echo -e "\033[1;32m[$(timestamp)] $1\033[0m"; }
 warn()    { echo -e "\033[1;33m[$(timestamp)] $1\033[0m"; }
 error()   { echo -e "\033[1;31m[$(timestamp)] $1\033[0m"; }
+
+# --- Defaults ---
+ENVIRONMENT=""
+MODULE=""
+ADDON=""
+PROJECT=""
+INCLUDE_SECURITY=false
+SKIP_INIT=false
+ONLINE=false
+
 
 # --- Dependency Check ---
 for cmd in curl zip jq; do
@@ -156,7 +166,8 @@ mkdir -p "$DEST_DIR"
 
 # --- Fetch Helpers ---
 fetch_file() {
-  local rel="$1" dest="$2" cache="$CACHE_DIR/$(basename "$rel")"
+  local rel="$1" dest="$2" cache="$CACHE_DIR/$rel"
+  mkdir -p "$(dirname "$cache")"
   mkdir -p "$(dirname "$dest")"
   if [ "$ONLINE" = true ] && curl -sf --retry 3 --retry-delay 2 "$REPO_URL/$rel" -o "$dest"; then
     cp "$dest" "$cache" >/dev/null 2>&1; success "✅ Downloaded: $rel"
@@ -274,7 +285,7 @@ if command -v terraform >/dev/null 2>&1; then
     info "🔄 Initializing Terraform workspace..."
     (cd "$DEST_DIR" && terraform init -input=false -backend=true >/dev/null 2>&1 \
       && success "🚀 Terraform initialized successfully in $DEST_DIR" \
-      || warn "⚠️ Terraform init failed — check configuration."))
+      || warn "⚠️ Terraform init failed — check configuration.")
   else
     info "⏩ Skipping Terraform init (--no-init flag set)."
   fi
@@ -292,7 +303,7 @@ fi
 
 # --- Zip Packaging ---
 ZIP_FILE="$OUT_DIR/${PROJECT}-${MODULE:-bundle}.zip"
-(cd "$DEST_DIR" && zip -qr "../${PROJECT}-${MODULE:-bundle}.zip" .)
+(cd "$DEST_DIR" && zip -qr "$ZIP_FILE" .)
 success "📦 Project packaged → $ZIP_FILE"
 
 # --- Output Summary ---

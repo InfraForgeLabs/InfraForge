@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # 🌐 InfraForge Installer / Uninstaller
-# Free · Local · Open · Forever
+# Free · Local · User-Owned · Forever
 
 REPO_URL="https://github.com/InfraForgeLabs/InfraForge.git"
 INSTALL_DIR="/usr/local/InfraForge"

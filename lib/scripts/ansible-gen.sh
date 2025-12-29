@@ -1,8 +1,17 @@
 #!/bin/bash
 REPO_URL="https://raw.githubusercontent.com/InfraForgeLabs/InfraForge/main/AnsibleTemplates"
-OUT_DIR="generated"
+OUT_DIR="${HOME:?HOME is not set}/InfraForge/ansibl/ansible-templatess"
 CACHE_DIR=".cache/ansible-templates"
 mkdir -p "$OUT_DIR" "$CACHE_DIR"
+
+
+vaultpass=""
+slackurl=""
+slackchannel=""
+jenkinsurl=""
+jenkinsuser=""
+jenkinstoken=""
+jobname=""
 
 # ------------------- Logging -------------------
 timestamp() { date +"%H:%M:%S"; }
@@ -13,10 +22,10 @@ error()   { echo -e "\033[1;31m[$(timestamp)] $1\033[0m"; }
 
 # ------------------- Input helper -------------------
 read_input() {
-  local var=$1; local prompt=$2; local default=$3; local value
+  local var=$1 prompt=$2 default=$3 value
   read -e -p "$prompt [$default]: " value
-  if [[ -z "$value" ]]; then value="$default"; fi
-  eval $var="'$value'"
+  [[ -z "$value" ]] && value="$default"
+  printf -v "$var" '%s' "$value"
 }
 
 # ------------------- CLI Flags -------------------
@@ -56,12 +65,19 @@ PROJECT=${PROJECT:-$DEFAULT_PROJECT}
 ATTACH_ADDONS=${ATTACH_ADDONS:-$DEFAULT_ATTACH}
 
 # ------------------- Parse Vars -------------------
-if [ -n "$VARS" ]; then
+if [[ -n "${VARS:-}" ]]; then
   IFS=',' read -ra VAR_ARRAY <<< "$VARS"
+
   for v in "${VAR_ARRAY[@]}"; do
-    key=$(echo "$v" | cut -d'=' -f1)
-    value=$(echo "$v" | cut -d'=' -f2-)
-    eval "$key='$value'"
+    key="${v%%=*}"
+    value="${v#*=}"
+
+    # Validate variable name (Bash-safe)
+    if [[ "$key" =~ ^[A-Z_][A-Z0-9_]*$ ]]; then
+      printf -v "$key" '%s' "$value"
+    else
+      warn "⚠️ Invalid variable name ignored: $key"
+    fi
   done
 fi
 
@@ -97,9 +113,12 @@ mkdir -p "$DEST_DIR"
 
 # ------------------- Fetch Helper -------------------
 fetch_file() {
-  local rel="$1"; local dest="$2"; local cache="$CACHE_DIR/$(basename "$rel")"
+  local rel="$1"
+  local dest="$2"
+  local cache="$CACHE_DIR/$rel"
+  mkdir -p "$(dirname "$cache")"
   mkdir -p "$(dirname "$dest")"
-  if [ "$ONLINE" = true ] && curl -sf "$REPO_URL/$rel" -o "$dest"; then
+  if [ "$ONLINE" = true ] && curl -fL --retry 2 --connect-timeout 5 "$REPO_URL/$rel" -o "$dest"; then
     cp "$dest" "$cache" >/dev/null 2>&1
     success "✅ Downloaded: $rel"
     return 0
@@ -214,11 +233,11 @@ fi
 # =========================================================
 # 🔐 Addon Logic (Vault, Slack, Jenkins)
 # =========================================================
+shopt -s nullglob
 for f in "$DEST_DIR"/*; do
   [[ ! -f "$f" ]] && continue
   case "$(basename "$f")" in
     ansible-vault-example.yml)
-      vaultpass=${vault_pass:-}
       if [ -z "$vaultpass" ]; then read -s -p "Enter Vault password [changeme123]: " vaultpass; echo; vaultpass=${vaultpass:-changeme123}; fi
       sed -i "s/{{ANSIBLE_VAULT_PASS}}/$vaultpass/g" "$f"
       success "🔐 Vault password injected"

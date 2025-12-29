@@ -25,6 +25,10 @@ fi
 
 RESET_CONFIG=false
 SHOW_CONTEXT=false
+USE_CACHE=""
+
+USE_CACHE=""
+
 
 # --- CLI Args ---
 while [[ "$#" -gt 0 ]]; do
@@ -110,7 +114,7 @@ configure_context() {
 
   echo ""
   echo "🔹 Available AWS CLI Profiles:"
-  PROFILES=($(aws configure list-profiles 2>/dev/null))
+   mapfile -t PROFILES < <(aws configure list-profiles 2>/dev/null)
   if [[ ${#PROFILES[@]} -eq 0 ]]; then
     PROFILES=("default")
   fi
@@ -128,7 +132,14 @@ configure_context() {
 
   echo ""
   echo "🔹 Available AWS Regions:"
-  REGIONS=($(aws ec2 describe-regions --query "Regions[].RegionName" --output text --profile "$PROFILE" 2>/dev/null))
+  mapfile -t REGIONS < <(
+  aws ec2 describe-regions \
+    --query "Regions[].RegionName" \
+    --output text \
+    --profile "$PROFILE" \
+    2>/dev/null
+  )
+
   if [[ ${#REGIONS[@]} -eq 0 ]]; then
     REGIONS=("us-east-1" "us-west-1" "us-west-2" "ap-south-1" "ap-southeast-1" "eu-central-1" "eu-west-1")
   fi
@@ -146,7 +157,14 @@ EOF
 }
 
 # --- Run context setup if no config exists ---
-[[ ! -f "$CONFIG_FILE" ]] && configure_context
+if [[ -f "$CONFIG_FILE" ]]; then
+  while IFS='=' read -r key value; do
+    case "$key" in
+      PROFILE|REGION) printf -v "$key" '%s' "${value//\"/}" ;;
+    esac
+  done < "$CONFIG_FILE"
+fi
+
 
 # --- Always show current context ---
 echo ""

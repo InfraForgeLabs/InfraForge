@@ -1,6 +1,6 @@
 #!/bin/bash
 REPO_URL="https://raw.githubusercontent.com/InfraForgeLabs/InfraForge/main/HelmTemplates"
-OUT_DIR="generated"
+OUT_DIR="${HOME:?HOME is not set}/InfraForge/helm-templates"
 CACHE_DIR=".cache/helm-templates"
 mkdir -p "$OUT_DIR" "$CACHE_DIR"
 
@@ -13,9 +13,10 @@ error()   { echo -e "\033[1;31m[$(timestamp)] $1\033[0m"; }
 
 # --- Read helper (Backspace-capable + default fallback) ---
 read_input() {
-  local varname=$1; local prompt=$2; local default=$3; local value
+  local varname=$1 prompt=$2 default=$3 value
   read -e -p "$prompt [$default]: " value
-  eval $varname="'${value:-$default}'"
+  [[ -z "$value" ]] && value="$default"
+  printf -v "$varname" '%s' "$value"
 }
 
 # --- CLI Flags ---
@@ -65,6 +66,10 @@ DEFAULT_NS="default"
 DEFAULT_IMAGE="nginx:latest"
 DEFAULT_REPLICAS="1"
 DEFAULT_PORT="80"
+ADDONS_FLAGS=""
+EXTRAS_FLAGS=""
+addons=""
+extras=""
 
 MODE=${MODE:-$DEFAULT_MODE}
 CHART=${CHART:-$DEFAULT_CHART}
@@ -126,7 +131,8 @@ mkdir -p "$CHART_DIR/templates"
 fetch_template() {
   local rel="$1"
   local dest="$2"
-  local cache="$CACHE_DIR/$(basename "$rel")"
+  local cache="$CACHE_DIR/$rel"
+  mkdir -p "$(dirname "$cache")"
   mkdir -p "$(dirname "$dest")"
 
   if [ "$ONLINE" = true ] && curl -sf --retry 3 --retry-delay 2 "$REPO_URL/$rel" -o "$dest"; then

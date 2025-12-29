@@ -1,6 +1,6 @@
 #!/bin/bash
 REPO_URL="https://raw.githubusercontent.com/InfraForgeLabs/InfraForge/main/DockerTemplates"
-OUT_DIR="generated"
+OUT_DIR="${HOME:?HOME is not set}/Infraforge/docker-templates"
 CACHE_DIR=".cache/docker-templates"
 mkdir -p "$OUT_DIR" "$CACHE_DIR" "$OUT_DIR/addons"
 
@@ -11,11 +11,15 @@ success() { echo -e "\033[1;32m[$(timestamp)] $1\033[0m"; }
 warn()    { echo -e "\033[1;33m[$(timestamp)] $1\033[0m"; }
 error()   { echo -e "\033[1;31m[$(timestamp)] $1\033[0m"; }
 
+ADDONS_FLAGS=""
+addons=""
+
 # --- Backspace-Capable Input ---
 read_input() {
-  local varname=$1; local prompt=$2; local default=$3; local value
+  local varname=$1 prompt=$2 default=$3 value
   read -e -p "$prompt [$default]: " value
-  eval $varname="'${value:-$default}'"
+  [[ -z "$value" ]] && value="$default"
+  printf -v "$varname" '%s' "$value"
 }
 
 # --- CLI Args ---
@@ -76,12 +80,16 @@ SEMVER=${SEMVER:-$DEFAULT_SEMVER}
 BASE_VERSION=${BASE_VERSION:-$DEFAULT_BASE_VERSION}
 
 # --- Parse Vars ---
-if [ -n "$VARS" ]; then
+if [[ -n "${VARS:-}" ]]; then
   IFS=',' read -ra VAR_ARRAY <<< "$VARS"
   for v in "${VAR_ARRAY[@]}"; do
-    key=$(echo "$v" | cut -d'=' -f1)
-    value=$(echo "$v" | cut -d'=' -f2-)
-    eval "$key='$value'"
+    key="${v%%=*}"
+    value="${v#*=}"
+    if [[ "$key" =~ ^[A-Z_][A-Z0-9_]*$ ]]; then
+      printf -v "$key" '%s' "$value"
+    else
+      warn "⚠️ Invalid variable ignored: $key"
+    fi
   done
 fi
 

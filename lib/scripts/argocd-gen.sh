@@ -5,7 +5,7 @@
 # ============================================================
 
 REPO_URL="https://raw.githubusercontent.com/InfraForgeLabs/InfraForge/main/ArgoCDTemplates"
-OUT_DIR="generated"
+OUT_DIR="${HOME:?HOME is not set}/InfraForge/argocd-templates"
 CACHE_DIR=".cache/argocd-templates"
 mkdir -p "$OUT_DIR" "$CACHE_DIR"
 
@@ -18,9 +18,10 @@ error()   { echo -e "\033[1;31m[$(timestamp)] $1\033[0m"; }
 
 # --- Backspace-Capable Input ---
 read_input() {
-  local varname=$1; local prompt=$2; local default=$3; local value
+  local varname=$1 prompt=$2 default=$3 value
   read -e -p "$prompt [$default]: " value
-  eval $varname="'${value:-$default}'"
+  [[ -z "$value" ]] && value="$default"
+  printf -v "$varname" '%s' "$value"
 }
 
 # --- Default Values ---
@@ -32,6 +33,8 @@ DEFAULT_GITREPO="git@github.com:org/repo.git"
 DEFAULT_BRANCH="main"
 DEFAULT_PROJECT="default"
 DEFAULT_ATTACH="false"
+ADDONS_FLAGS=""
+addons=""
 
 MODE=${MODE:-$DEFAULT_MODE}
 TYPE=${TYPE:-$DEFAULT_TYPE}
@@ -88,12 +91,16 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 # --- Parse Vars ---
-if [ -n "$VARS" ]; then
+if [[ -n "${VARS:-}" ]]; then
   IFS=',' read -ra VAR_ARRAY <<< "$VARS"
   for v in "${VAR_ARRAY[@]}"; do
-    key=$(echo "$v" | cut -d'=' -f1)
-    value=$(echo "$v" | cut -d'=' -f2-)
-    eval "$key='$value'"
+    key="${v%%=*}"
+    value="${v#*=}"
+    if [[ "$key" =~ ^[A-Z_][A-Z0-9_]*$ ]]; then
+      printf -v "$key" '%s' "$value"
+    else
+      warn "⚠️ Invalid variable ignored: $key"
+    fi
   done
 fi
 
@@ -180,7 +187,10 @@ esac
 
 # --- Fetch Template Function ---
 fetch_template() {
-  local rel="$1" dest="$2" cache="$CACHE_DIR/$(basename "$rel")"
+  local rel="$1"
+  local dest="$2"
+  local cache="$CACHE_DIR/$rel"
+  mkdir -p "$(dirname "$cache")"
   if [ "$ONLINE" = true ]; then
     if curl -sf --retry 3 --retry-delay 2 "$REPO_URL/$rel" -o "$dest"; then
       cp "$dest" "$cache" >/dev/null 2>&1

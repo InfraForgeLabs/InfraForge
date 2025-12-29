@@ -1,9 +1,8 @@
-dmin@DESKTOP-67B57TV:~/InfraForge$ cat bin/infraforge
 #!/usr/bin/env bash
 set -euo pipefail
 
 # 🌐 InfraForge — Unified CLI Wrapper
-# Free · Local · Open · Forever
+# Free · Local · User-Owned · Forever
 
 INFRAFORGE_BIN_SOURCE="$(readlink -f "${BASH_SOURCE[0]}")"
 INFRAFORGE_BIN_DIR="$(cd "$(dirname "${INFRAFORGE_BIN_SOURCE}")" && pwd)"

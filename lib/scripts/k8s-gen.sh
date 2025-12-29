@@ -1,8 +1,8 @@
 #!/bin/bash
 VERSION="7.8"
 REPO_URL="https://raw.githubusercontent.com/InfraForgeLabs/InfraForge/main/K8sYamlTemplates"
-SCRIPT_NAME="k8s-yaml-gen.sh"
-OUT_DIR="generated"
+SCRIPT_NAME="${HOME:?HOME is not set}/k8s-yaml-gen.sh"
+OUT_DIR="InfraForge/k8s-templates"
 CACHE_DIR=".cache/k8s-yaml-gen"
 mkdir -p "$OUT_DIR" "$CACHE_DIR"
 
@@ -68,6 +68,12 @@ DEFAULT_IMAGE="nginx:latest"
 DEFAULT_PORT="80"
 DEFAULT_REPLICAS="1"
 DEFAULT_STORAGE="1Gi"
+
+ADDONS_FLAGS=""
+HARDENED="false"
+APPLY="false"
+DRYRUN="false"
+CREATE_SERVICE="false"
 
 MODE=${MODE:-$DEFAULT_MODE}
 RESOURCE=${RESOURCE:-$DEFAULT_RESOURCE}
@@ -235,6 +241,7 @@ success "✅ YAML generated: $OUTPUT_FILE"
 # --- Hardened Addons (preserved from original) ---
 if [ "$HARDENED" = "true" ]; then
   IFS=',' read -ra ADDONS <<< "$ADDONS_FLAGS"
+
   for addon in "${ADDONS[@]}"; do
     case ${addon// /} in
       1) addon_path="pdb.yaml" ;;
@@ -246,14 +253,25 @@ if [ "$HARDENED" = "true" ]; then
       7) addon_path="istio-mtls.yaml" ;;
       *) continue ;;
     esac
+
+    addon_cache="$CACHE_DIR/addons/$addon_path"
+    mkdir -p "$(dirname "$addon_cache")"
+
     info "📦 Adding addon: $addon_path"
+
     if [ "$ONLINE" = true ] && curl -sf "$REPO_URL/addons/$addon_path" -o "$OUT_DIR/addon.yaml"; then
-      cp "$OUT_DIR/addon.yaml" "$CACHE_DIR/$addon_path"
+      cp "$OUT_DIR/addon.yaml" "$addon_cache"
       success "✅ Added from GitHub"
-    elif [ -f "$CACHE_DIR/$addon_path" ]; then
-      cp "$CACHE_DIR/$addon_path" "$OUT_DIR/addon.yaml"
+
+    elif [ -f "$addon_cache" ]; then
+      cp "$addon_cache" "$OUT_DIR/addon.yaml"
       success "📦 Used cached addon"
+
+    else
+      warn "⚠️ Addon $addon_path not available"
+      continue
     fi
+
     echo -e "\n---\n" >> "$OUTPUT_FILE"
     cat "$OUT_DIR/addon.yaml" >> "$OUTPUT_FILE"
     rm -f "$OUT_DIR/addon.yaml"

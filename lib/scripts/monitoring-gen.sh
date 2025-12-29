@@ -1,6 +1,6 @@
 #!/bin/bash
 REPO_URL="https://raw.githubusercontent.com/InfraForgeLabs/InfraForge/main/MonitoringTemplates"
-OUT_DIR="generated"
+OUT_DIR="${HOME:?HOME is not set}/InfraForge/monitoring-templates"
 CACHE_DIR=".cache/monitoring-templates"
 mkdir -p "$OUT_DIR" "$CACHE_DIR"
 
@@ -13,6 +13,22 @@ info()    { echo -e "\033[1;34m[$(timestamp)] $1\033[0m"; }
 success() { echo -e "\033[1;32m[$(timestamp)] $1\033[0m"; }
 warn()    { echo -e "\033[1;33m[$(timestamp)] $1\033[0m"; }
 error()   { echo -e "\033[1;31m[$(timestamp)] $1\033[0m"; }
+
+# --- Defaults ---
+MODE=""
+mode=""
+ADDON=""
+PROJECT=""
+APP=""
+NS=""
+IMAGE=""
+PORT=""
+SLACK_URL=""
+SLACK_CHANNEL=""
+RETENTION=""
+HELM="false"
+DRYRUN="false"
+
 
 # --- CLI Args ---
 while [[ "$#" -gt 0 ]]; do
@@ -87,6 +103,10 @@ if [ -z "$MODE" ]; then
   read -e -p "Your choice [1-5 or 1,2,3]: " mode
 fi
 
+if [ -n "$MODE" ]; then
+  mode="$MODE"
+fi
+
 IFS=',' read -ra MODES <<< "$mode"
 
 # --- Project Name ---
@@ -100,10 +120,12 @@ mkdir -p "$DEST_DIR"
 fetch_file() {
   local relpath="$1"
   local dest="$2"
-  local cache="$CACHE_DIR/$(basename "$relpath")"
+  local cache="$CACHE_DIR/$relpath"
+  mkdir -p "$(dirname "$cache")"
   mkdir -p "$(dirname "$dest")"
 
   if [ "$ONLINE" = true ] && curl -sf --retry 3 --retry-delay 2 "$REPO_URL/$relpath" -o "$dest"; then
+    mkdir -p "$(dirname "$cache")"
     cp "$dest" "$cache" >/dev/null 2>&1
     success "✅ Downloaded $relpath"
   elif [ -f "$cache" ]; then

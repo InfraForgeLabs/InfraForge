@@ -1,6 +1,6 @@
 #!/bin/bash
 REPO_URL="https://raw.githubusercontent.com/InfraForgeLabs/InfraForge/main/JenkinsTemplates"
-OUT_DIR="generated"
+OUT_DIR="${HOME:?HOME is not set}/InfraForge/jenkins-templates"
 ADDON_DIR="$OUT_DIR/addons"
 CACHE_DIR=".cache/jenkins-templates"
 mkdir -p "$OUT_DIR" "$CACHE_DIR" "$ADDON_DIR"
@@ -57,12 +57,14 @@ DEFAULT_REPO="git@github.com:example/repo.git"
 DEFAULT_BRANCH="main"
 DEFAULT_SEMVER="false"
 DEFAULT_VERSION="1.0.0"
+ADDONS_FLAGS=""
 
 # --- Read helper ---
 read_input() {
-  local varname=$1; local prompt=$2; local default=$3; local value
+  local varname=$1 prompt=$2 default=$3 value
   read -e -p "$prompt [$default]: " value
-  eval $varname="'${value:-$default}'"
+  [[ -z "$value" ]] && value="$default"
+  printf -v "$varname" '%s' "$value"
 }
 
 # --- Mode Selection ---
@@ -186,10 +188,15 @@ if [[ "$MODE_PATH" == "production" || "$MODE_PATH" == "hardened" ]]; then
     fi
 
     # --- Add Header Comment for user guidance ---
-    sed -i "1i\\
-    // ============================================================\\n// 📎 Addon: ${addon_file}\\n// ------------------------------------------------------------\\n// 💡 To use: copy this stage into your Jenkinsfile where needed.\\n// Example:\\n//     stage('Security Scan') { ... }\\n// ============================================================\\n" "$DEST_ADDON"
-
-  done
+  {
+    echo "// ============================================================"
+    echo "// 📎 Addon: ${addon_file}"
+    echo "// ------------------------------------------------------------"
+    echo "// 💡 To use: copy this stage into your Jenkinsfile where needed."
+    echo "// ============================================================"
+    cat "$DEST_ADDON"
+  } > "$DEST_ADDON.tmp" && mv "$DEST_ADDON.tmp" "$DEST_ADDON" 
+done
 
   success "🧩 All selected addons are available in: $ADDON_DIR/"
   echo ""
