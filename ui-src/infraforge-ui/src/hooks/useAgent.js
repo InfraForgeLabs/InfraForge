@@ -1,18 +1,6 @@
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-// IMPORTANT:
-// Do NOT import invoke at top-level.
-// It breaks browser preview builds.
-let invokeFn = null;
-
-if (window.__TAURI__) {
-  // Lazy-load only inside Tauri
-  import("@tauri-apps/api/core").then(mod => {
-    invokeFn = mod.invoke;
-  });
-}
-
 /*
   InfraForge Agent Hook (LOCKED)
   - Browser-safe
@@ -26,11 +14,25 @@ export function useAgent() {
   const [status, setStatus] = useState("not_detected");
   const [logs] = useState([]);          // logs are agent-owned
   const [workspaceDir] = useState("");  // filled by agent later
+  const [invokeFn, setInvokeFn] = useState(null);
 
-  // Detect agent purely via Tauri presence
+  // Detect agent + lazy-load Tauri safely
   useEffect(() => {
-    if (window.__TAURI__) {
+    if (typeof window === "undefined") {
+      setStatus("not_detected");
+      return;
+    }
+
+    if ("__TAURI__" in window) {
       setStatus("ready");
+
+      // Lazy-load invoke ONLY in desktop runtime
+      import("@tauri-apps/api/core")
+        .then(mod => setInvokeFn(() => mod.invoke))
+        .catch(() => {
+          console.warn("[InfraForge] Failed to load Tauri core");
+          setInvokeFn(null);
+        });
     } else {
       setStatus("not_detected");
     }
@@ -40,7 +42,7 @@ export function useAgent() {
     const jobId = uuidv4();
 
     // 🚫 Browser preview: NO execution, NO protocol
-    if (!window.__TAURI__ || !invokeFn) {
+    if (status !== "ready" || !invokeFn) {
       console.info(
         "[InfraForge] Agent not available — browser preview mode"
       );
