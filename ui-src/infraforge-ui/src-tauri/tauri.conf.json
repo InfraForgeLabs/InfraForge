@@ -13,11 +13,13 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "InfraForge",
         "width": 1200,
         "height": 800,
         "resizable": true,
-        "fullscreen": false
+        "fullscreen": false,
+        "visible": false
       }
     ]
   },

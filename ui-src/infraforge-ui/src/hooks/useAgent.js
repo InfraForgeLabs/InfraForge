@@ -1,79 +1,50 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { invoke } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
 
 export function useAgent() {
-  const [status, setStatus] = useState("checking");
-  const [token, setToken] = useState(
-    localStorage.getItem("infraforgeToken") || ""
-  );
+  const [status, setStatus] = useState("not_detected");
   const [logs, setLogs] = useState([]);
-  const [jobId, setJobId] = useState(null);
-  const [workspace, setWorkspace] = useState(
-    localStorage.getItem("infraforgeWorkspace") || "default"
+  const [workspaceDir, setWorkspaceDir] = useState(
+    `${window.HOME || ""}/InfraForge/workspaces`
   );
-  const [workspaceDir, setWorkspaceDir] = useState(null);
 
-  /* -----------------------------
-     Agent health
-  ------------------------------*/
   useEffect(() => {
-    invoke("agent_health")
-      .then(() => setStatus(token ? "ready" : "pair"))
-      .catch(() => setStatus("agent-down"));
-  }, [token]);
-
-  /* -----------------------------
-     Workspace binding
-  ------------------------------*/
-  useEffect(() => {
-    invoke("resolve_workspace_dir", { workspace })
-      .then(setWorkspaceDir)
-      .catch(console.error);
-  }, [workspace]);
-
-  /* -----------------------------
-     Log streaming + severity parse
-  ------------------------------*/
-  useEffect(() => {
-    let unlisten;
-
-    listen("agent-log", (event) => {
-      const line = event.payload;
-
-      let level = "info";
-      if (line.includes("ERROR")) level = "error";
-      else if (line.includes("WARN")) level = "warn";
-
-      setLogs((prev) => [...prev, { level, text: line }]);
-    }).then((fn) => (unlisten = fn));
-
-    return () => {
-      if (unlisten) unlisten();
-    };
+    // simple detection: if Tauri is present, agent is "ready"
+    if (window.__TAURI__) {
+      setStatus("ready");
+    } else {
+      setStatus("not_detected");
+    }
   }, []);
 
-  /* -----------------------------
-     Run generator
-  ------------------------------*/
-  const runGenerator = async (stack, inputs = {}) => {
-    setLogs([]);
-    setStatus("running");
+  async function runGenerator(stack) {
+    const jobId = uuidv4();
 
-    const id = await invoke("next_job_id");
-    setJobId(id);
+    const job = {
+      id: jobId,
+      source: "browser",
+      workspace: "default",
+      stack,
+      status: "pending",
+      started_at: "",
+      ended_at: null,
+      output_dir: "",
+      last_log: null
+    };
 
-    await invoke("start_stream", { token });
-  };
+    // Append job to registry (Tauri backend)
+    await invoke("append_job", { job });
+
+    // Trigger runtime via protocol
+    window.location.href =
+      `infraforge://generation?job_id=${jobId}`;
+  }
 
   return {
-    status,
     logs,
-    jobId,
-    workspace,
-    setWorkspace,
     workspaceDir,
     runGenerator,
-    hasToken: Boolean(token),
+    status
   };
 }
