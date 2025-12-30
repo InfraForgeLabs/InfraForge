@@ -4,7 +4,13 @@ export function useJobs() {
   const [jobs, setJobs] = useState([]);
 
   useEffect(() => {
-    // 🚫 Browser preview: no agent, no jobs
+    // 🌍 Public website → no desktop features
+    if (typeof __PUBLIC_BUILD__ !== "undefined" && __PUBLIC_BUILD__) {
+      setJobs([]);
+      return;
+    }
+
+    // 🚫 Browser preview without Tauri
     if (typeof window === "undefined" || !("__TAURI__" in window)) {
       setJobs([]);
       return;
@@ -14,11 +20,8 @@ export function useJobs() {
 
     async function loadJobs() {
       try {
-        const { readTextFile } =
-          await import("@tauri-apps/api/fs");
-
-        const { homeDir } =
-          await import("@tauri-apps/api/path");
+        const { readTextFile } = await import("@tauri-apps/api/fs");
+        const { homeDir } = await import("@tauri-apps/api/path");
 
         const home = await homeDir();
         const path = `${home}/.infraforge/jobs.json`;
