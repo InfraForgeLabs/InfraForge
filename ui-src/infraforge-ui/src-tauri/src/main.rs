@@ -1,5 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+import "./guard/noLocalhost";
+
 use std::fs;
 use tauri::{Builder, Listener};
 use serde::Deserialize;
