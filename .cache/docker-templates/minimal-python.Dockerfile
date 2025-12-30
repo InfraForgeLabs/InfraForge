@@ -1,9 +1,0 @@
-FROM {{BASE_IMAGE}}
-
-WORKDIR /app
-
-COPY . .
-
-RUN {{INSTALL_CMD}}
-
-CMD ["{{RUN_CMD}}"]
