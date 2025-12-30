@@ -3,8 +3,13 @@
 use std::{
   io::Read,
   path::PathBuf,
-  process::Command,
+  process::{Command, Child},
   time::Duration,
+  fs,
+  sync::{
+    atomic::{AtomicU64, Ordering},
+    Mutex,
+  },
 };
 
 use tauri::{
@@ -17,10 +22,90 @@ use tauri::{
 };
 
 use tokio::time::sleep;
+use once_cell::sync::Lazy;
+use serde::{Serialize, Deserialize};
 
-/* ----------------------------------------
-   Locate InfraForge CLI (PATH → pipx)
------------------------------------------*/
+/* ======================================================
+   GLOBAL STATE
+====================================================== */
+
+static JOB_COUNTER: AtomicU64 = AtomicU64::new(1);
+
+/* Track running processes by job ID */
+static JOB_PROCESSES: Lazy<Mutex<std::collections::HashMap<u64, Child>>> =
+  Lazy::new(|| Mutex::new(std::collections::HashMap::new()));
+
+/* ======================================================
+   SHARED JOB REGISTRY (CLI ↔ UI)
+====================================================== */
+
+static REGISTRY_PATH: Lazy<PathBuf> = Lazy::new(|| {
+  let home = std::env::var("HOME").expect("HOME not set");
+  PathBuf::from(home).join(".infraforge/jobs.json")
+});
+
+static REGISTRY_LOCK: Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct Job {
+  pub id: u64,
+  pub source: String,
+  pub workspace: String,
+  pub stack: String,
+  pub status: String,
+  pub pid: Option<u32>,
+  pub started_at: String,
+  pub ended_at: Option<String>,
+  pub output_dir: String,
+  pub last_log: Option<String>,
+}
+
+#[derive(Serialize, Deserialize)]
+struct Registry {
+  version: u8,
+  jobs: Vec<Job>,
+}
+
+fn default_registry() -> Registry {
+  Registry { version: 1, jobs: vec![] }
+}
+
+fn load_registry() -> Registry {
+  if let Ok(data) = fs::read_to_string(&*REGISTRY_PATH) {
+    serde_json::from_str(&data).unwrap_or(default_registry())
+  } else {
+    default_registry()
+  }
+}
+
+fn save_registry(reg: &Registry) -> Result<(), String> {
+  if let Some(parent) = REGISTRY_PATH.parent() {
+    fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+  }
+  fs::write(
+    &*REGISTRY_PATH,
+    serde_json::to_string_pretty(reg).unwrap(),
+  )
+  .map_err(|e| e.to_string())
+}
+
+fn upsert_job(job: Job) -> Result<(), String> {
+  let _lock = REGISTRY_LOCK.lock().unwrap();
+  let mut reg = load_registry();
+
+  if let Some(existing) = reg.jobs.iter_mut().find(|j| j.id == job.id) {
+    *existing = job;
+  } else {
+    reg.jobs.push(job);
+  }
+
+  save_registry(&reg)
+}
+
+/* ======================================================
+   INFRAFORGE CLI LOCATOR
+====================================================== */
+
 fn locate_infraforge_cli() -> Option<PathBuf> {
   if let Ok(path) = which::which("infraforge") {
     return Some(path);
@@ -36,39 +121,26 @@ fn locate_infraforge_cli() -> Option<PathBuf> {
   None
 }
 
-/* ----------------------------------------
-   Agent helpers (BLOCKING SAFE)
------------------------------------------*/
+/* ======================================================
+   AGENT HELPERS
+====================================================== */
+
 fn agent_running_blocking() -> bool {
   reqwest::blocking::get("http://127.0.0.1:7331/health")
     .map(|r| r.status().is_success())
     .unwrap_or(false)
 }
 
-fn start_agent(cli: &PathBuf) {
-  let _ = Command::new(cli)
-    .args(["agent", "start"])
-    .spawn();
-}
-
-fn stop_agent(cli: &PathBuf) {
-  let _ = Command::new(cli)
-    .args(["agent", "stop"])
-    .spawn();
-}
-
-/* ----------------------------------------
-   Agent health (ASYNC SAFE)
------------------------------------------*/
 async fn agent_running_async() -> bool {
   tauri::async_runtime::spawn_blocking(|| agent_running_blocking())
     .await
     .unwrap_or(false)
 }
 
-/* ----------------------------------------
-   UI → Rust health check (IPC)
------------------------------------------*/
+/* ======================================================
+   TAURI COMMANDS
+====================================================== */
+
 #[tauri::command]
 fn agent_health() -> Result<(), String> {
   reqwest::blocking::get("http://127.0.0.1:7331/health")
@@ -82,10 +154,51 @@ fn agent_health() -> Result<(), String> {
     })
 }
 
-/* ----------------------------------------
-   Stream agent logs → UI events
------------------------------------------*/
-fn stream_agent_logs(app: AppHandle<Wry>, token: String) {
+#[tauri::command]
+fn next_job_id() -> u64 {
+  JOB_COUNTER.fetch_add(1, Ordering::SeqCst)
+}
+
+#[tauri::command]
+fn list_jobs_ui() -> Vec<Job> {
+  load_registry().jobs
+}
+
+#[tauri::command]
+fn cancel_job(job_id: u64) -> Result<(), String> {
+  let mut map = JOB_PROCESSES.lock().unwrap();
+
+  if let Some(mut child) = map.remove(&job_id) {
+    child.kill().map_err(|e| e.to_string())?;
+    Ok(())
+  } else {
+    Err("Job not running".into())
+  }
+}
+
+#[tauri::command]
+fn read_file(path: String) -> Result<String, String> {
+  fs::read_to_string(&path).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn diff_files(template: String, output: String) -> Result<String, String> {
+  let left = fs::read_to_string(template).map_err(|e| e.to_string())?;
+  let right = fs::read_to_string(output).map_err(|e| e.to_string())?;
+
+  let diff = similar::TextDiff::from_lines(&left, &right)
+    .unified_diff()
+    .header("template", "output")
+    .to_string();
+
+  Ok(diff)
+}
+
+/* ======================================================
+   LOG STREAMING (PER JOB)
+====================================================== */
+
+fn stream_agent_logs(app: AppHandle<Wry>, job_id: u64, token: String) {
   std::thread::spawn(move || {
     let client = reqwest::blocking::Client::new();
     let res = client
@@ -97,7 +210,13 @@ fn stream_agent_logs(app: AppHandle<Wry>, token: String) {
       let mut buffer = String::new();
       while res.read_to_string(&mut buffer).is_ok() {
         for line in buffer.lines() {
-          let _ = app.emit("agent-log", line.to_string());
+          let _ = app.emit(
+            "agent-log",
+            serde_json::json!({
+              "job_id": job_id,
+              "line": line
+            }),
+          );
         }
         buffer.clear();
       }
@@ -105,51 +224,26 @@ fn stream_agent_logs(app: AppHandle<Wry>, token: String) {
   });
 }
 
-/* ----------------------------------------
-   Tauri command (frontend calls this)
------------------------------------------*/
 #[tauri::command]
-fn start_stream(app: AppHandle<Wry>, token: String) {
-  stream_agent_logs(app, token);
+fn start_stream(app: AppHandle<Wry>, job_id: u64, token: String) {
+  stream_agent_logs(app, job_id, token);
 }
 
-/* ----------------------------------------
-   Build tray menu
------------------------------------------*/
+/* ======================================================
+   TRAY MENU
+====================================================== */
+
 fn build_menu(
   handle: &AppHandle<Wry>,
-  cli_present: bool,
   running: bool,
 ) -> Menu<Wry> {
-  let label = if !cli_present {
-    "Agent: CLI not found"
-  } else if running {
-    "Agent: running"
-  } else {
-    "Agent: stopped"
-  };
+  let status = if running { "Agent: running" } else { "Agent: stopped" };
 
   let agent = MenuItem::with_id(
     handle,
     MenuId::new("agent"),
-    label,
+    status,
     false,
-    None::<&str>,
-  ).unwrap();
-
-  let start = MenuItem::with_id(
-    handle,
-    MenuId::new("start"),
-    "Start Agent",
-    cli_present && !running,
-    None::<&str>,
-  ).unwrap();
-
-  let stop = MenuItem::with_id(
-    handle,
-    MenuId::new("stop"),
-    "Stop Agent",
-    cli_present && running,
     None::<&str>,
   ).unwrap();
 
@@ -161,60 +255,46 @@ fn build_menu(
     None::<&str>,
   ).unwrap();
 
-  Menu::with_items(handle, &[&agent, &start, &stop, &quit]).unwrap()
+  Menu::with_items(handle, &[&agent, &quit]).unwrap()
 }
+
+/* ======================================================
+   MAIN
+====================================================== */
 
 fn main() {
   Builder::default()
     .invoke_handler(tauri::generate_handler![
-      start_stream,
-      agent_health
+      agent_health,
+      next_job_id,
+      list_jobs_ui,
+      cancel_job,
+      read_file,
+      diff_files,
+      start_stream
     ])
     .setup(|app| {
-      let handle: AppHandle<Wry> = app.handle().clone();
-
-      let cli = locate_infraforge_cli();
-      let cli_for_menu = cli.clone();
-      let cli_present = cli.is_some();
-
-      if let Some(cli_path) = cli.as_ref() {
-        if !agent_running_blocking() {
-          start_agent(cli_path);
-        }
-      }
+      let handle = app.handle().clone();
 
       let tray = TrayIconBuilder::new()
         .menu(&build_menu(
           &handle,
-          cli_present,
           agent_running_blocking(),
         ))
-        .on_menu_event(move |app: &AppHandle<Wry>, event| {
-          if let Some(cli_path) = cli_for_menu.as_ref() {
-            match event.id().0.as_str() {
-              "start" => start_agent(cli_path),
-              "stop" => stop_agent(cli_path),
-              "quit" => app.exit(0),
-              _ => {}
-            }
-          } else if event.id().0 == "quit" {
-            app.exit(0);
-          }
-        })
         .on_tray_icon_event(|_, event| {
           if let TrayIconEvent::DoubleClick { .. } = event {
-            // future: restore window
+            // future restore window
           }
         })
         .build(app)?;
 
-      let tray_id: TrayIconId = tray.id().clone();
+      let tray_id = tray.id().clone();
       let handle_for_task = handle.clone();
 
       tauri::async_runtime::spawn(async move {
         loop {
           let running = agent_running_async().await;
-          let menu = build_menu(&handle_for_task, cli_present, running);
+          let menu = build_menu(&handle_for_task, running);
 
           if let Some(tray) = handle_for_task.tray_by_id(&tray_id) {
             let _ = tray.set_menu(Some(menu));
