@@ -1,0 +1,20 @@
+{
+  "id": "terraform",
+  "name": "Terraform",
+  "description": "Generate Terraform infrastructure templates",
+  "fields": [
+    {
+      "key": "cloud",
+      "label": "Cloud Provider",
+      "type": "select",
+      "required": true,
+      "options": ["aws", "azure", "gcp"]
+    },
+    {
+      "key": "project",
+      "label": "Project Name",
+      "type": "text",
+      "required": true
+    }
+  ]
+}

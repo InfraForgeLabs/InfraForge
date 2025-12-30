@@ -1,0 +1,19 @@
+{
+  "id": "k8s",
+  "name": "Kubernetes",
+  "description": "Generate Kubernetes YAML manifests",
+  "fields": [
+    {
+      "key": "app_name",
+      "label": "Application Name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "replicas",
+      "label": "Replicas",
+      "type": "text",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "id": "ansible",
+  "name": "Ansible",
+  "description": "Generate Ansible playbooks and roles",
+  "fields": [
+    {
+      "key": "role_name",
+      "label": "Role Name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "target_os",
+      "label": "Target OS",
+      "type": "select",
+      "required": true,
+      "options": ["ubuntu", "debian", "centos", "rhel"]
+    }
+  ]
+}

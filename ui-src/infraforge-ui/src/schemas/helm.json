@@ -1,0 +1,20 @@
+{
+  "id": "helm",
+  "name": "Helm",
+  "description": "Generate Helm charts for Kubernetes apps",
+  "fields": [
+    {
+      "key": "chart_name",
+      "label": "Chart Name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "service_type",
+      "label": "Service Type",
+      "type": "select",
+      "required": true,
+      "options": ["ClusterIP", "NodePort", "LoadBalancer"]
+    }
+  ]
+}

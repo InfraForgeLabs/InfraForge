@@ -1,0 +1,19 @@
+{
+  "id": "argocd",
+  "name": "ArgoCD",
+  "description": "Generate GitOps manifests for ArgoCD",
+  "fields": [
+    {
+      "key": "app_name",
+      "label": "Application Name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "repo_url",
+      "label": "Git Repository URL",
+      "type": "text",
+      "required": true
+    }
+  ]
+}

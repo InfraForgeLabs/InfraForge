@@ -1,0 +1,20 @@
+{
+  "id": "docker",
+  "name": "Docker",
+  "description": "Generate Dockerfiles and compose templates",
+  "fields": [
+    {
+      "key": "app_type",
+      "label": "Application Type",
+      "type": "select",
+      "required": true,
+      "options": ["node", "python", "go", "java"]
+    },
+    {
+      "key": "expose_port",
+      "label": "Expose Port",
+      "type": "text",
+      "required": false
+    }
+  ]
+}
