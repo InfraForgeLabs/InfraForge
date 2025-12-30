@@ -1,67 +1,42 @@
+const IS_PUBLIC =
+  typeof window !== "undefined" &&
+  window.location.protocol === "https:";
+
 let agentUrl = "";
 let agentToken = "";
 
-const IS_PUBLIC =
-  location.hostname !== "localhost" &&
-  location.hostname !== "127.0.0.1";
-
-/**
- * Bootstrap agent using local defaults only.
- * No /agent/info endpoint exists on the agent.
- */
-async function bootstrapLocalAgent() {
-  if (IS_PUBLIC) return false;
-
-  try {
-    agentUrl = "http://127.0.0.1:7331";
-
-    // token is stored locally by the agent itself
-    const cachedToken = localStorage.getItem("infraforge_token");
-    if (cachedToken) {
-      agentToken = cachedToken;
-    }
-
-    // Validate agent availability
-    const res = await fetch(`${agentUrl}/health`);
-    if (!res.ok) return false;
-
-    localStorage.setItem("infraforge_agent_url", agentUrl);
-    return true;
-  } catch {
+// 🚫 Public web build: agent is disabled
+if (IS_PUBLIC) {
+  export async function initAgent() {
     return false;
   }
-}
 
-export async function initAgent() {
-  if (IS_PUBLIC) return false;
+  export async function checkAgent() {
+    return false;
+  }
+} else {
+  // 🖥️ Local / Desktop mode only
 
-  // 1️⃣ Try cached info
-  const cachedUrl = localStorage.getItem("infraforge_agent_url");
-  const cachedToken = localStorage.getItem("infraforge_token");
+  async function bootstrapLocalAgent() {
+    try {
+      agentUrl = "http://127.0.0.1:7331";
+      const res = await fetch(`${agentUrl}/health`);
+      return res.ok;
+    } catch {
+      return false;
+    }
+  }
 
-  if (cachedUrl) agentUrl = cachedUrl;
-  if (cachedToken) agentToken = cachedToken;
+  export async function initAgent() {
+    return await bootstrapLocalAgent();
+  }
 
-  if (agentUrl) {
+  export async function checkAgent() {
     try {
       const res = await fetch(`${agentUrl}/health`);
-      if (res.ok) return true;
+      return res.ok;
     } catch {
-      /* fall through */
+      return false;
     }
-  }
-
-  // 2️⃣ Try local bootstrap
-  return await bootstrapLocalAgent();
-}
-
-export async function checkAgent() {
-  if (!agentUrl) return false;
-
-  try {
-    const res = await fetch(`${agentUrl}/health`);
-    return res.ok;
-  } catch {
-    return false;
   }
 }

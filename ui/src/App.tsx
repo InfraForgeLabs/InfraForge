@@ -9,27 +9,16 @@ export default function App() {
 
   useEffect(() => {
     async function start() {
-      // Try to initialize agent (may fail on public site)
-      await initAgent();
-
-      // Always try a health check
-      const alive = await checkAgent();
+      const ok = await initAgent();
+      const alive = ok ? await checkAgent() : false;
       setReady(alive);
-
-      // Mark that detection is complete
       setChecked(true);
     }
     start();
   }, []);
 
-  // While checking, render nothing (or spinner later)
   if (!checked) return null;
+  if (!ready) return <AgentRequired />;
 
-  // Agent not available
-  if (!ready) {
-    return <AgentRequired onConnected={() => setReady(true)} />;
-  }
-
-  // Agent available
   return <Generator />;
 }

@@ -7,5 +7,11 @@ export default defineConfig({
   build: {
     outDir: "../../docs/generation",
     emptyOutDir: true,
+    rollupOptions: {
+      external: [
+        "@tauri-apps/api/fs",
+        "@tauri-apps/api/path",
+      ],
+    },
   },
 });
