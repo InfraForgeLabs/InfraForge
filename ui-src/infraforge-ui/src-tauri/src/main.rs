@@ -40,7 +40,7 @@ fn locate_infraforge_cli() -> Option<PathBuf> {
    Agent helpers (BLOCKING SAFE)
 -----------------------------------------*/
 fn agent_running_blocking() -> bool {
-  reqwest::blocking::get("http://localhost:7331/health")
+  reqwest::blocking::get("http://127.0.0.1:7331/health")
     .map(|r| r.status().is_success())
     .unwrap_or(false)
 }
@@ -67,13 +67,29 @@ async fn agent_running_async() -> bool {
 }
 
 /* ----------------------------------------
+   UI → Rust health check (IPC)
+-----------------------------------------*/
+#[tauri::command]
+fn agent_health() -> Result<(), String> {
+  reqwest::blocking::get("http://127.0.0.1:7331/health")
+    .map_err(|e| e.to_string())
+    .and_then(|r| {
+      if r.status().is_success() {
+        Ok(())
+      } else {
+        Err(format!("Health check failed: {}", r.status()))
+      }
+    })
+}
+
+/* ----------------------------------------
    Stream agent logs → UI events
 -----------------------------------------*/
 fn stream_agent_logs(app: AppHandle<Wry>, token: String) {
   std::thread::spawn(move || {
     let client = reqwest::blocking::Client::new();
     let res = client
-      .get("http://localhost:7331/generate/stream")
+      .get("http://127.0.0.1:7331/generate/stream")
       .header("X-Agent-Token", token)
       .send();
 
@@ -90,7 +106,7 @@ fn stream_agent_logs(app: AppHandle<Wry>, token: String) {
 }
 
 /* ----------------------------------------
-   Tauri command (FRONTEND CALLS THIS)
+   Tauri command (frontend calls this)
 -----------------------------------------*/
 #[tauri::command]
 fn start_stream(app: AppHandle<Wry>, token: String) {
@@ -150,8 +166,10 @@ fn build_menu(
 
 fn main() {
   Builder::default()
-    .plugin(tauri_plugin_http::init())
-    .invoke_handler(tauri::generate_handler![start_stream])
+    .invoke_handler(tauri::generate_handler![
+      start_stream,
+      agent_health
+    ])
     .setup(|app| {
       let handle: AppHandle<Wry> = app.handle().clone();
 
@@ -159,18 +177,12 @@ fn main() {
       let cli_for_menu = cli.clone();
       let cli_present = cli.is_some();
 
-      /* ----------------------------------------
-         Auto-start agent
-      -----------------------------------------*/
       if let Some(cli_path) = cli.as_ref() {
         if !agent_running_blocking() {
           start_agent(cli_path);
         }
       }
 
-      /* ----------------------------------------
-         Tray setup
-      -----------------------------------------*/
       let tray = TrayIconBuilder::new()
         .menu(&build_menu(
           &handle,
@@ -199,9 +211,6 @@ fn main() {
       let tray_id: TrayIconId = tray.id().clone();
       let handle_for_task = handle.clone();
 
-      /* ----------------------------------------
-         Background agent polling
-      -----------------------------------------*/
       tauri::async_runtime::spawn(async move {
         loop {
           let running = agent_running_async().await;
@@ -220,4 +229,3 @@ fn main() {
     .run(tauri::generate_context!())
     .expect("error while running InfraForge desktop");
 }
-
