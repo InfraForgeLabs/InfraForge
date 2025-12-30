@@ -1,6 +1,27 @@
 import { useEffect, useRef, useState } from "react";
+import { fetch as tauriFetch } from "@tauri-apps/plugin-http";
 
 const AGENT_URL = "http://127.0.0.1:7331";
+
+/* -----------------------------
+   Unified HTTP Fetch
+   - Browser  → window.fetch
+   - Desktop  → Tauri HTTP plugin
+------------------------------*/
+async function httpFetch(url, options = {}) {
+  try {
+    if (window.__TAURI__) {
+      return tauriFetch(url, {
+        method: options.method || "GET",
+        headers: options.headers,
+        body: options.body,
+      });
+    }
+    return fetch(url, options);
+  } catch (err) {
+    throw err;
+  }
+}
 
 export function useAgent() {
   const [status, setStatus] = useState("checking"); // checking | agent-down | pair | ready | running
@@ -16,7 +37,7 @@ export function useAgent() {
      Agent Health
   ------------------------------*/
   useEffect(() => {
-    fetch(`${AGENT_URL}/health`)
+    httpFetch(`${AGENT_URL}/health`)
       .then(() => setStatus(token ? "ready" : "pair"))
       .catch(() => setStatus("agent-down"));
   }, [token]);
@@ -25,8 +46,8 @@ export function useAgent() {
      Schema Discovery (Agent)
   ------------------------------*/
   useEffect(() => {
-    fetch(`${AGENT_URL}/schemas`)
-      .then((r) => r.json())
+    httpFetch(`${AGENT_URL}/schemas`)
+      .then((r) => (r.json ? r.json() : r))
       .then((data) => {
         if (data?.schemas) {
           setSchemas(data.schemas);
@@ -48,12 +69,14 @@ export function useAgent() {
 
   /* -----------------------------
      Run Generator (SSE)
+     NOTE: EventSource works in browser.
+     Desktop SSE upgrade comes later.
   ------------------------------*/
   const runGenerator = (stack, inputs = {}) => {
     setLogs([]);
     setStatus("running");
 
-    fetch(`${AGENT_URL}/generate/stream`, {
+    httpFetch(`${AGENT_URL}/generate/stream`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -64,6 +87,16 @@ export function useAgent() {
       setLogs(["Failed to start generator"]);
       setStatus("ready");
     });
+
+    if (rememberEventSource()) return;
+  };
+
+  function rememberEventSource() {
+    if (window.__TAURI__) {
+      // Desktop: SSE will be handled later via Rust stream
+      setLogs((l) => [...l, "Waiting for generator output..."]);
+      return true;
+    }
 
     if (eventSourceRef.current) {
       eventSourceRef.current.close();
@@ -86,7 +119,9 @@ export function useAgent() {
       es.close();
       setStatus("ready");
     };
-  };
+
+    return false;
+  }
 
   /* -----------------------------
      Cleanup (desktop-safe)
@@ -104,7 +139,7 @@ export function useAgent() {
     logs,
     pair,
     runGenerator,
-    schemas,        // ← agent-discovered schemas (or null)
+    schemas,        // agent-discovered schemas (or null)
     hasToken: Boolean(token),
   };
 }
