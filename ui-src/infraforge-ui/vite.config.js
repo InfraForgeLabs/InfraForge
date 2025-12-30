@@ -4,8 +4,10 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   base: "/generation/",
-  define: {
-    __PUBLIC_BUILD__: true,
+  resolve: {
+    alias: {
+      "./services/agent": "./services/agent.web",
+    },
   },
   build: {
     outDir: "../../docs/generation",
