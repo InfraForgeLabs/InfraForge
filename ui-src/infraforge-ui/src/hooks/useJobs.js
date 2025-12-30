@@ -1,43 +1,47 @@
 import { useEffect, useState } from "react";
 
-/*
-  useJobs (LOCKED)
-  - Browser preview: returns empty array
-  - Desktop (Tauri): reads jobs.json via invoke
-*/
-
 export function useJobs() {
   const [jobs, setJobs] = useState([]);
 
   useEffect(() => {
-    // 🚫 Browser preview — no agent
-    if (!window.__TAURI__) {
+    // 🚫 Browser preview: no agent, no jobs
+    if (typeof window === "undefined" || !("__TAURI__" in window)) {
       setJobs([]);
       return;
     }
 
     let cancelled = false;
 
-    async function load() {
+    async function loadJobs() {
       try {
-        const { invoke } = await import("@tauri-apps/api/core");
-        const data = await invoke("list_jobs_ui");
-        if (!cancelled && Array.isArray(data)) {
-          setJobs(data);
+        const { readTextFile } =
+          await import("@tauri-apps/api/fs");
+
+        const { homeDir } =
+          await import("@tauri-apps/api/path");
+
+        const home = await homeDir();
+        const path = `${home}/.infraforge/jobs.json`;
+
+        const raw = await readTextFile(path);
+        const parsed = JSON.parse(raw);
+
+        if (!cancelled && parsed?.jobs) {
+          setJobs(parsed.jobs);
         }
-      } catch (err) {
-        console.error("[InfraForge] Failed to load jobs:", err);
+      } catch {
+        if (!cancelled) setJobs([]);
       }
     }
 
-    load();
-    const id = setInterval(load, 2000);
+    loadJobs();
+    const interval = setInterval(loadJobs, 2000);
 
     return () => {
       cancelled = true;
-      clearInterval(id);
+      clearInterval(interval);
     };
   }, []);
 
-  return jobs;
+  return Array.isArray(jobs) ? jobs : [];
 }
