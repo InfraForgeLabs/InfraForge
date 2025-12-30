@@ -1,0 +1,30 @@
+{
+  "$schema": "https://raw.githubusercontent.com/tauri-apps/tauri/dev/schema.json",
+
+  "identifier": "com.infraforgelabs.infraforge",
+  "productName": "InfraForge",
+  "version": "0.1.0",
+
+  "build": {
+    "frontendDist": "../docs/generation",
+    "devUrl": "http://localhost:5173"
+  },
+
+  "app": {
+    "windows": [
+      {
+        "title": "InfraForge",
+        "width": 1200,
+        "height": 800,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ]
+  },
+
+  "bundle": {
+    "icon": [
+      "icons/icon.png"
+    ]
+  }
+}
