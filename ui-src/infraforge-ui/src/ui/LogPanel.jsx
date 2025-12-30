@@ -1,22 +1,19 @@
-export default function LogPanel({ logs }) {
-  return (
-    <div className="bg-black text-xs font-mono p-4 overflow-auto h-full">
-      {logs.length === 0 && (
-        <div className="text-neutral-500">Waiting for logs…</div>
-      )}
+export default function LogPanel({ logs = [] }) {
+  const logList = Array.isArray(logs) ? logs : [];
 
-      {logs.map((l, i) => (
-        <div
-          key={i}
-          className={
-            l.level === "error"
-              ? "text-red-400"
-              : l.level === "warn"
-              ? "text-yellow-400"
-              : "text-green-400"
-          }
-        >
-          {l.text}
+  if (!logList.length) {
+    return (
+      <div className="flex-1 p-4 text-sm text-neutral-500">
+        No logs yet
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex-1 overflow-auto p-2 font-mono text-xs">
+      {logList.map((l, i) => (
+        <div key={i} className="text-neutral-300">
+          {l.message ?? String(l)}
         </div>
       ))}
     </div>

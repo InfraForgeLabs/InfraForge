@@ -13,19 +13,21 @@ export default function Generator() {
     status
   } = useAgent();
 
-  /* Shared job registry (CLI + UI) */
-  const jobs = useJobs();
+  // 🔒 Normalize at boundary (CRITICAL)
+  const rawJobs = useJobs();
+  const jobList = Array.isArray(rawJobs) ? rawJobs : [];
+  const logList = Array.isArray(logs) ? logs : [];
 
   const [activeJobId, setActiveJobId] = useState(null);
 
   /* Auto-select latest job */
   useEffect(() => {
-    if (!activeJobId && jobs.length > 0) {
-      setActiveJobId(jobs[jobs.length - 1].id);
+    if (!activeJobId && jobList.length > 0) {
+      setActiveJobId(jobList[jobList.length - 1].id);
     }
-  }, [jobs, activeJobId]);
+  }, [jobList, activeJobId]);
 
-  const activeJob = jobs.find(j => j.id === activeJobId);
+  const activeJob = jobList.find(j => j.id === activeJobId);
 
   /* Agent not detected screen */
   if (status === "not_detected") {
@@ -55,7 +57,7 @@ export default function Generator() {
     <div className="flex flex-col h-full">
       {/* Job Tabs */}
       <JobTabs
-        jobs={jobs}
+        jobs={jobList}
         activeJobId={activeJobId}
         setActiveJobId={setActiveJobId}
       />
@@ -71,7 +73,7 @@ export default function Generator() {
           </div>
 
           <LogPanel
-            logs={logs.filter(
+            logs={logList.filter(
               l => l.job_id === activeJobId
             )}
           />

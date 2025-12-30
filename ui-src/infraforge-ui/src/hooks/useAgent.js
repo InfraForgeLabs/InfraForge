@@ -1,22 +1,33 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { invoke } from "@tauri-apps/api/core";
+
+// IMPORTANT:
+// Do NOT import invoke at top-level.
+// It breaks browser preview builds.
+let invokeFn = null;
+
+if (window.__TAURI__) {
+  // Lazy-load only inside Tauri
+  import("@tauri-apps/api/core").then(mod => {
+    invokeFn = mod.invoke;
+  });
+}
 
 /*
-  Agent detection rules (LOCKED):
-  - Browser NEVER talks to localhost
-  - If Tauri is present → agent is assumed available
-  - Actual execution happens via protocol dispatch
+  InfraForge Agent Hook (LOCKED)
+  - Browser-safe
+  - Desktop-aware
+  - No localhost
+  - No schemas
+  - No execution in browser
 */
 
 export function useAgent() {
   const [status, setStatus] = useState("not_detected");
-  const [logs, setLogs] = useState([]);
-  const [workspaceDir] = useState(
-    `${window.HOME || ""}/InfraForge/workspaces`
-  );
+  const [logs] = useState([]);          // logs are agent-owned
+  const [workspaceDir] = useState("");  // filled by agent later
 
-  // 🔐 Agent detection: Tauri presence ONLY
+  // Detect agent purely via Tauri presence
   useEffect(() => {
     if (window.__TAURI__) {
       setStatus("ready");
@@ -26,37 +37,44 @@ export function useAgent() {
   }, []);
 
   async function runGenerator(stack) {
-    if (!window.__TAURI__) {
-      console.warn("InfraForge runtime not available");
+    const jobId = uuidv4();
+
+    // 🚫 Browser preview: NO execution, NO protocol
+    if (!window.__TAURI__ || !invokeFn) {
+      console.info(
+        "[InfraForge] Agent not available — browser preview mode"
+      );
       return;
     }
 
-    const jobId = uuidv4();
+    try {
+      await invokeFn("append_job_ui", {
+        job: {
+          id: jobId,
+          source: "browser",
+          workspace: "default",
+          stack,
+          status: "pending",
+          started_at: "",
+          ended_at: null,
+          output_dir: "",
+          last_log: null
+        }
+      });
 
-    const job = {
-      id: jobId,
-      source: "browser",
-      workspace: "default",
-      stack,
-      status: "pending",
-      started_at: "",
-      ended_at: null,
-      output_dir: "",
-      last_log: null
-    };
+      // ✅ Desktop-only protocol trigger
+      window.location.href =
+        `infraforge://generation?job_id=${jobId}`;
 
-    // 1️⃣ Write job entry (single source of truth)
-    await invoke("append_job", { job });
-
-    // 2️⃣ Trigger runtime via protocol
-    window.location.href =
-      `infraforge://generation?job_id=${jobId}`;
+    } catch (err) {
+      console.error("[InfraForge] Failed to start generation:", err);
+    }
   }
 
   return {
-    logs,
+    status,
+    logs: Array.isArray(logs) ? logs : [],
     workspaceDir,
-    runGenerator,
-    status
+    runGenerator
   };
 }

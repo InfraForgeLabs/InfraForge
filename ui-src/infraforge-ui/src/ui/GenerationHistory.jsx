@@ -1,28 +1,29 @@
-export default function GenerationHistory({ history }) {
-  if (history.length === 0) {
+export default function GenerationHistory({ history = [] }) {
+  const historyList = Array.isArray(history) ? history : [];
+
+  if (!historyList.length) {
     return (
-      <div className="text-neutral-500 text-sm">
-        No generations yet
+      <div className="p-2 text-sm text-neutral-500">
+        No previous generations
       </div>
     );
   }
 
   return (
-    <ul className="space-y-2 text-sm">
-      {history.map((h) => (
-        <li
+    <div className="space-y-2">
+      {historyList.map((h) => (
+        <div
           key={h.id}
-          className="border border-neutral-800 rounded p-2"
+          className="p-2 rounded bg-neutral-900 text-sm"
         >
-          <div className="font-semibold">{h.stack}</div>
-          <div className="text-neutral-500">
-            {new Date(h.startedAt).toLocaleString()}
+          <div className="text-neutral-300">
+            Job {h.id.slice(0, 8)}
           </div>
-          <div className="text-neutral-400 text-xs">
-            {h.outputDir}
+          <div className="text-neutral-500 text-xs">
+            {h.status}
           </div>
-        </li>
+        </div>
       ))}
-    </ul>
+    </div>
   );
 }
