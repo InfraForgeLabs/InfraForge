@@ -25,7 +25,7 @@ show_help() {
 cat <<EOF
 InfraForge — Unified Infrastructure CLI
 ---------------------------------------
-Free · Local · Open · Forever
+Free · Local · User-Owned · Forever
 
 Usage:
   infraforge gen <stack> [options]

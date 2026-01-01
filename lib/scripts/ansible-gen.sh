@@ -1,6 +1,6 @@
 #!/bin/bash
 REPO_URL="https://raw.githubusercontent.com/InfraForgeLabs/InfraForge/main/AnsibleTemplates"
-OUT_DIR="${HOME:?HOME is not set}/InfraForge/ansibl/ansible-templatess"
+OUT_DIR="${HOME:?HOME is not set}/InfraForge/ansible/ansible-templatess"
 CACHE_DIR=".cache/ansible-templates"
 mkdir -p "$OUT_DIR" "$CACHE_DIR"
 

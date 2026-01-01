@@ -1,7 +1,7 @@
 #!/bin/bash
 VERSION="7.8"
 REPO_URL="https://raw.githubusercontent.com/InfraForgeLabs/InfraForge/main/K8sYamlTemplates"
-SCRIPT_NAME="${HOME:?HOME is not set}/k8s-yaml-gen.sh"
+SCRIPT_NAME="${HOME:?HOME is not set}/InfraForge/k8s-yaml-gen.sh"
 OUT_DIR="InfraForge/k8s-templates"
 CACHE_DIR=".cache/k8s-yaml-gen"
 mkdir -p "$OUT_DIR" "$CACHE_DIR"

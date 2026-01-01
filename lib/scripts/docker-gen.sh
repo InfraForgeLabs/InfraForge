@@ -1,6 +1,6 @@
 #!/bin/bash
 REPO_URL="https://raw.githubusercontent.com/InfraForgeLabs/InfraForge/main/DockerTemplates"
-OUT_DIR="${HOME:?HOME is not set}/Infraforge/docker-templates"
+OUT_DIR="${HOME:?HOME is not set}/InfraForge/docker-templates"
 CACHE_DIR=".cache/docker-templates"
 mkdir -p "$OUT_DIR" "$CACHE_DIR" "$OUT_DIR/addons"
 
