@@ -15,7 +15,6 @@
   
   <style>
     :root {
-      --bg:#0d1117;
       --fg:#c9d1d9;
       --accent:#58a6ff;
       --muted:#8b949e;
@@ -26,15 +25,21 @@
     * { box-sizing:border-box; }
 
     body {
-      background:var(--bg);
-      color:var(--fg);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      padding:2rem;
-      text-align:center;
-    }
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  color: var(--fg);
+
+  background:
+    radial-gradient(1200px 600px at top,
+      rgba(88,166,255,0.08),
+      transparent 60%),
+    linear-gradient(180deg,
+      #0b0f17 0%,
+      #0d1117 60%,
+      #0b0f17 100%);
+}
+
 
     /* LOGO */
     .logo {
@@ -166,62 +171,80 @@
   font-weight: 500;
   opacity: 0.9;
 }
+/* HERO LAYOUT — LOCKED */
+.hero {
+  min-height: 92vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+  padding: 0 24px;
+
+  /* Match DevOpsMind visual center */
+  transform: translateY(-3vh);
+}
+
+.hero > * {
+  max-width: 960px;
+}
     
   </style>
 </head>
 
 <body>
 
-  <!-- LOGO -->
-  <img src="./assets/infraforge-logo-saas-orange.svg"
-     alt="InfraForge logo — local-first DevSecOps automation platform"
-     class="hero-logo" />
+  <!-- HERO -->
+  <section class="hero">
 
+    <img src="./assets/infraforge-logo-saas-orange.svg"
+         alt="InfraForge logo — local-first DevSecOps automation platform"
+         class="hero-logo" />
 
-  <h1>
-  Local-First DevSecOps Automation.<br />
-  No SaaS. No Lock-In. Full Control.
-  </h1>
+    <h1>
+      Local-First DevSecOps Automation.<br />
+      No SaaS. No Lock-In. Full Control.
+    </h1>
 
+    <div class="divider"></div>
 
-  <div class="divider"></div>
+    <p>
+      <strong>InfraForge</strong> is a local-first infrastructure automation platform
+      for engineers who want transparent, reviewable, production-ready infrastructure code —
+      without handing control to a SaaS.
+    </p>
 
-  <p>
-   <strong>InfraForge</strong> is a local-first infrastructure automation platform
-   for engineers who want transparent, reviewable, production-ready infrastructure code —
-   without handing control to a SaaS.
-  </p>
+    <p>
+      Generate plain Terraform, Docker, Helm, Kubernetes, and CI/CD templates
+      that you can inspect, version, and secure before anything ever runs.
+    </p>
 
-  <p>
-   Generate plain Terraform, Docker, Helm, Kubernetes, and CI/CD templates
-   that you can inspect, version, and secure before anything ever runs.
-  </p>
+    <p>
+      Nothing is deployed. Nothing is hidden. Everything stays yours.
+    </p>
 
-  <p>
-    Nothing is deployed. Nothing is hidden. Everything stays yours.
-  </p>
+    <div class="badge">
+      🚀 Public Release: January 26, 2026
+    </div>
 
+    <p><strong>Status:</strong> v1.0.0 (Pre-release)</p>
+    <p><strong>Platform:</strong> Linux (Debian & RHEL family supported)</p>
 
-  <div class="badge">
-    🚀 Public Release: January 26, 2026
-  </div>
+    <div class="nav-buttons">
+      <button onclick="showSection('features')">What InfraForge Does</button>
+      <button onclick="showSection('quickstart')">Quickstart</button>
+      <button onclick="showSection('roadmap')">Roadmap</button>
+      <button onclick="showSection('download')">Download</button>
+      <button onclick="showSection('licensing')">Licensing</button>
+    </div>
 
-  <p><strong>Status:</strong> v1.0.0 (Pre-release)</p>
-  <p><strong>Platform:</strong> Linux (Debian & RHEL family supported)</p>
+    <p class="cta-line">
+      Start with confidence. Generate first. Deploy later.
+    </p>
 
-  <!-- NAVIGATION BUTTONS -->
-  <div class="nav-buttons">
-    <button onclick="showSection('features')">What InfraForge Does</button>
-    <button onclick="showSection('quickstart')">Quickstart</button>
-    <button onclick="showSection('roadmap')">Roadmap</button>
-    <button onclick="showSection('download')">Download</button>
-    <button onclick="showSection('licensing')">Licensing</button>
-  </div>
-
-  <p class="cta-line">
-    Start with confidence. Generate first. Deploy later.
-  </p>
-
+  </section>
 
   <!-- FEATURES -->
   <section id="features" class="section">
