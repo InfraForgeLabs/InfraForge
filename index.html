@@ -25,17 +25,20 @@
     * { box-sizing:border-box; }
 
     body {
-      background:
-        radial-gradient(1200px 600px at top,
-          rgba(88,166,255,0.08),
-          transparent 60%),
-        linear-gradient(180deg,
-          #0b0f17 0%,
-          #0d1117 60%,
-          #0b0f17 100%);
-      color: var(--fg);
-      font-family: system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-    }
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  color: var(--fg);
+
+  background:
+    radial-gradient(1200px 600px at top,
+      rgba(88,166,255,0.08),
+      transparent 60%),
+    linear-gradient(180deg,
+      #0b0f17 0%,
+      #0d1117 60%,
+      #0b0f17 100%);
+}
 
 
     /* LOGO */
@@ -168,11 +171,26 @@
   font-weight: 500;
   opacity: 0.9;
 }
+.hero {
+  min-height: 92vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+  padding: 0 24px;
+
+  /* slight upward bias like DevOpsMind */
+  transform: translateY(-3vh);
+}
     
   </style>
 </head>
 
 <body>
+  <section class="hero">
 
   <!-- LOGO -->
   <img src="./assets/infraforge-logo-saas-orange.svg"
@@ -260,7 +278,7 @@
     and build information.
   </p>
 </div>
-
+</section>
   </section>
 
   <!-- QUICKSTART -->
