@@ -15,26 +15,28 @@
   
   <style>
     :root {
-      --bg:#0d1117;
-      --fg:#c9d1d9;
-      --accent:#58a6ff;
-      --muted:#8b949e;
-      --border:#1f2933;
-      --radius:12px;
+      --accent: #58a6ff;     /* steel blue */
+      --accent-soft: #79c0ff;
+      --fg: #c9d1d9;
+      --muted: #8b949e;
+      --border: #1f2933;
     }
 
     * { box-sizing:border-box; }
 
     body {
-      background:var(--bg);
-      color:var(--fg);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      padding:2rem;
-      text-align:center;
+      background:
+        radial-gradient(1200px 600px at top,
+          rgba(88,166,255,0.08),
+          transparent 60%),
+        linear-gradient(180deg,
+          #0b0f17 0%,
+          #0d1117 60%,
+          #0b0f17 100%);
+      color: var(--fg);
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
     }
+
 
     /* LOGO */
     .logo {
@@ -108,7 +110,7 @@
     }
 
     .card {
-      background:#161b22;
+      background: linear-gradient(180deg, #0e1626, #0b0f17);
       border:1px solid var(--border);
       border-radius:var(--radius);
       padding:1.2rem;
