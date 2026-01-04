@@ -53,12 +53,20 @@
       margin-bottom:1rem;
     }
 
-    h1 {
-      font-size: 2.4rem;
+    .hero-title {
+      font-size: 2.3rem;
+      font-weight: 600;
       background: linear-gradient(90deg, #79c0ff, #58a6ff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: .3em;
+      margin: 0.6rem 0 0.4rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.05rem;
+      color: var(--muted);
+      letter-spacing: 0.3px;
+      margin-bottom: 1.6rem;
     }
 
     h2 { font-weight:500; margin-bottom:1rem; }
@@ -238,10 +246,14 @@
          alt="InfraForge logo — local-first DevSecOps automation platform"
          class="hero-logo" />
 
-    <h1>
-      Local-First DevSecOps Automation.<br />
-      No SaaS. No Lock-In. Full Control.
+    <h1 class="hero-title">
+      Local-First DevSecOps Automation.
     </h1>
+
+    <p class="hero-subtitle">
+      No SaaS · No Lock-In · Full Control.
+    </p>
+
 
     <div class="divider"></div>
 
