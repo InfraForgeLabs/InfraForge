@@ -216,6 +216,15 @@
   transform: translateY(-1px);
   border-color: rgba(88,166,255,0.6);
 }
+.nav-buttons .primary {
+  background: linear-gradient(90deg, #79c0ff, #58a6ff);
+  color: #0b0f17;
+  border: none;
+}
+
+.nav-buttons .primary:hover {
+  filter: brightness(1.05);
+}
     
   </style>
 </head>
@@ -259,12 +268,16 @@
     <p><strong>Platform:</strong> Linux (Debian & RHEL family supported)</p>
 
     <div class="nav-buttons">
+      <button class="primary" onclick="showSection('quickstart')">
+        Get Started (CLI)
+      </button>
+
       <button onclick="showSection('features')">What InfraForge Does</button>
-      <button onclick="showSection('quickstart')">Quickstart</button>
       <button onclick="showSection('roadmap')">Roadmap</button>
       <button onclick="showSection('download')">Download</button>
       <button onclick="showSection('licensing')">Licensing</button>
     </div>
+
 
     <p class="cta-line">
       Start with confidence. Generate first. Deploy later.
