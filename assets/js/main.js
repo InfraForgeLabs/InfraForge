@@ -41,6 +41,34 @@ document.querySelectorAll('.fade-in').forEach(el => {
 
 
 // =====================
+// Release countdown
+// =====================
+(function releaseCountdown() {
+  const el = document.getElementById("countdown");
+  if (!el) return;
+
+  function update() {
+    const now = new Date();
+    const diff = RELEASE_DATE - now;
+
+    if (diff <= 0) {
+      el.textContent = "now available 🚀";
+      return;
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+
+    el.textContent = `${days}d ${hours}h ${minutes}m`;
+  }
+
+  update();
+  setInterval(update, 60 * 1000); // update every minute
+})();
+
+
+// =====================
 // Download auto-enable
 // =====================
 (function enableDownloadOnRelease() {
