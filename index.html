@@ -59,9 +59,14 @@
       Nothing is deployed. Nothing is hidden. Everything stays yours.
     </p>
 
-    <div class="badge">
+    <div class="badge" id="release-badge">
       🚀 Public Release: January 26, 2026
     </div>
+
+    <p class="muted">
+      ⏳ Public release in <span id="countdown"></span>
+    </p>
+
 
     <p><strong>Status:</strong> v0.9.0 (Pre-release)</p>
     <p><strong>Platform:</strong> Linux (Debian & RHEL family supported)</p>
@@ -73,7 +78,7 @@
 
       <button onclick="showSection('features')">What InfraForge Does</button>
       <button onclick="showSection('roadmap')">Roadmap</button>
-      <button onclick="showSection('download')">Download</button>
+      <button type="button" onclick="showSection('download')">Download</button>
       <button onclick="showSection('licensing')">Licensing</button>
     </div>
 
@@ -85,7 +90,7 @@
   </section>
 
   <!-- FEATURES -->
-  <section id="features" class="section">
+  <section id="features" class="section fade-in">
     <h3>What InfraForge Does</h3>
 
     <div class="card">
@@ -123,7 +128,7 @@
   </section>
 
   <!-- QUICKSTART -->
-  <section id="quickstart" class="section">
+  <section id="quickstart" class="section fade-in">
     <h3>Quickstart</h3>
 
     <p><em>Linux (Debian & RHEL family supported)</em></p>
@@ -149,7 +154,7 @@
   </section>
 
   <!-- ROADMAP -->
-  <section id="roadmap" class="section">
+  <section id="roadmap" class="section fade-in">
     <h3>Roadmap</h3>
 
     <p>
@@ -179,7 +184,7 @@
   </section>
 
   <!-- DOWNLOAD -->
-  <section id="download" class="section">
+  <section id="download" class="section fade-in">  
     <h3>Download</h3>
 
     <p>InfraForge is currently in pre-release.</p>
@@ -207,14 +212,14 @@
     </div>
 
 
-    <p class="muted">
+    <p class="muted" id="download-note">
       Linux installers for Debian and CentOS-based distributions
       will be available on January 26, 2026.
     </p>
   </section>
 
   <!-- LICENSING -->
-  <section id="licensing" class="section">
+  <section id="licensing" class="section fade-in">
   <h3>Licensing</h3>
 
   <p>
