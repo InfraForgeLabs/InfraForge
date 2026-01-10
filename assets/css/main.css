@@ -254,3 +254,9 @@ body {
   }
 }
 
+.muted {
+  color: var(--muted);
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
