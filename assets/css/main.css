@@ -260,3 +260,7 @@ body {
   opacity: 0.9;
 }
 
+.download-btn {
+  min-height: 44px;
+}
+
