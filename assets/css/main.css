@@ -1,7 +1,7 @@
  :root {
       --fg: #d1d9d4;
-      ---accent: #7fb0ff;
-      ---muted: #9aa59c;
+      --accent: #7fb0ff;
+      --muted: #9aa59c;
       --border: #1e2a23;
       --radius:12px;
     }
@@ -128,16 +128,6 @@
       color:var(--fg);
     }
 
-    .download-btn {
-      background:transparent;
-      border:1px solid var(--border);
-      color:var(--fg);
-      padding:12px 22px;
-      border-radius:var(--radius);
-      font-weight:600;
-      cursor:not-allowed;
-      margin-top:1rem;
-    }
 
     footer {
       margin-top:4rem;
@@ -186,6 +176,10 @@
   transform: translateY(-3vh);
 }
 
+.section.fade-in {
+  display: block;
+}
+
 .hero > * {
   max-width: 960px;
 }
@@ -223,13 +217,12 @@ body {
 @keyframes pageFadeIn {
   from {
     opacity: 0;
-    transform: translateY(6px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
+
 
 /* =====================
    SCROLL FADE-IN
