@@ -281,4 +281,12 @@ body {
 .download-btn.enabled:hover {
   border-color: rgba(88,166,255,0.6);
 }
+#install-section pre {
+  margin-top: 0.6rem;
+}
+
+#install-section strong {
+  display: block;
+  margin-top: 1rem;
+}
 
