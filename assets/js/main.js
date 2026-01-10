@@ -64,7 +64,7 @@ document.querySelectorAll('.fade-in').forEach(el => {
   }
 
   update();
-  setInterval(update, 60 * 1000); // update every minute
+  setInterval(update, 60 * 1000);
 })();
 
 
@@ -113,6 +113,7 @@ document.querySelectorAll('.fade-in').forEach(el => {
   section.hidden = false;
 })();
 
+
 // =====================
 // Release badge updater (version.json)
 // =====================
@@ -120,7 +121,6 @@ document.querySelectorAll('.fade-in').forEach(el => {
   const badge = document.getElementById("release-badge");
   if (!badge) return;
 
-  // Do not change badge before official release date
   if (!IS_RELEASED()) return;
 
   fetch(
@@ -137,7 +137,36 @@ document.querySelectorAll('.fade-in').forEach(el => {
       badge.textContent = `🚀 InfraForge v${data.latest_version}`;
     })
     .catch(() => {
-      // Safe fallback — never leave broken UI
       badge.textContent = "🚀 InfraForge released";
+    });
+})();
+
+
+// =====================
+// Status line updater (version.json)
+// =====================
+(function updateStatusLine() {
+  const el = document.getElementById("status-line");
+  if (!el) return;
+
+  fetch(
+    "https://raw.githubusercontent.com/InfraForgeLabs/infraforgelabs.github.io/main/meta/infraforge/version.json",
+    { cache: "no-store" }
+  )
+    .then(res => {
+      if (!res.ok) throw new Error("failed to fetch version metadata");
+      return res.json();
+    })
+    .then(data => {
+      if (!data.latest_version) throw new Error("latest_version missing");
+
+      const isPre = data.latest_version.toLowerCase().includes("pre");
+      const label = isPre ? "Pre-release" : "Stable";
+
+      el.innerHTML =
+        `<strong>Status:</strong> v${data.latest_version} (${label})`;
+    })
+    .catch(() => {
+      // fallback: keep static HTML
     });
 })();
