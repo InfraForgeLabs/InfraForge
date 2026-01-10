@@ -160,11 +160,8 @@ document.querySelectorAll('.fade-in').forEach(el => {
     .then(data => {
       if (!data.latest_version) throw new Error("latest_version missing");
 
-      const isPre = data.latest_version.toLowerCase().includes("pre");
-      const label = isPre ? "Pre-release" : "Stable";
-
       el.innerHTML =
-        `<strong>Status:</strong> v${data.latest_version} (${label})`;
+        `<strong>Status:</strong> v${data.latest_version}`;
     })
     .catch(() => {
       // fallback: keep static HTML
