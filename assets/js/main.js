@@ -128,10 +128,9 @@ document.querySelectorAll(".fade-in").forEach(el => observer.observe(el));
 
   try {
     const info = await getReleaseInfo();
-    el.innerHTML =
-      `<strong>Status:</strong> v${info.version}` +
-      (info.isReleased ? "" : " (Pre-release)");
+    el.innerHTML = `<strong>Status:</strong> v${info.version}`;
   } catch {
     // fallback: keep static HTML
   }
 })();
+
