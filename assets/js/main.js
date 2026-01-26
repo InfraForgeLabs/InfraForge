@@ -86,6 +86,32 @@ document.querySelectorAll(".fade-in").forEach(el => observer.observe(el));
     });
 })();
 
+// =====================
+// Download note updater (version.json driven)
+// =====================
+(function updateDownloadNote() {
+  const note = document.getElementById("download-note");
+  if (!note) return;
+
+  fetch(
+    "https://raw.githubusercontent.com/InfraForgeLabs/infraforgelabs.github.io/main/meta/infraforge/version.json",
+    { cache: "no-store" }
+  )
+    .then(res => {
+      if (!res.ok) throw new Error("version not found");
+      return res.json();
+    })
+    .then(data => {
+      if (!data.latest_version) throw new Error("invalid version data");
+
+      note.textContent =
+        "Linux installers for Debian and RHEL-based distributions are available.";
+    })
+    .catch(() => {
+      note.textContent =
+        "Installer information temporarily unavailable. Please refresh.";
+    });
+})();
 
 // =====================
 // Install section reveal
