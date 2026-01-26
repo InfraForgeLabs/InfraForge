@@ -10,7 +10,7 @@ INFRAFORGE_ROOT="$(cd "${INFRAFORGE_BIN_DIR}/.." && pwd)"
 
 
 get_infraforge_version() {
-  local version_file="${INFRAFORGE_ROOT}/meta/infraforge/version.json"
+  local version_file="https://infraforgelabs.in/meta/infraforge/version.json"
 
   if [[ -f "$version_file" ]]; then
     grep -o '"latest_version"[[:space:]]*:[[:space:]]*"[^"]*"' "$version_file" \

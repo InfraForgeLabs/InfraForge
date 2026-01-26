@@ -44,7 +44,7 @@ INFRAFORGE_REPO_API="https://api.github.com/repos/InfraForgeLabs/InfraForge"
 # ────────────────────────────────
 INFRAFORGE_VERSION=""
 CACHE_VERSION_FILE="${INFRAFORGE_CACHE_DIR}/VERSION"
-VERSION_JSON_LOCAL="${INFRAFORGE_ROOT}/meta/infraforge/version.json"
+VERSION_JSON_LOCAL="https://infraforgelabs.in/meta/infraforge/version.json"
 
 # 1️⃣ Local installed version.json (authoritative)
 if [[ -f "${VERSION_JSON_LOCAL}" ]]; then
