@@ -6,8 +6,7 @@
 > ⚙️ Automate infrastructure, CI/CD, security, and monitoring — all from a single unified DevSecOps framework.
 
 
-InfraForge is a free, local, and open infrastructure automation platform developed by **InfraForgeLabs**.  
-The public domain will go live on **January 26, 2026 🇮🇳** under the *Free · Local · Open · Forever* philosophy.
+InfraForge is a free, local, and open infrastructure automation platform developed by **InfraForgeLabs**.
 
 ![InfraForge Banner](assets/banner.png)
 
@@ -19,6 +18,7 @@ InfraForge is an open-source infrastructure automation and DevSecOps platform de
 🌐 **Official Website:** [https://infraforge.infraforgelabs.in](https://infraforge.infraforgelabs.in)
 
 🏢 **Organization:** [https://infraforgelabs.in](https://infraforgelabs.in)
+
 ---
 
 <!-- 🌐 Global Project Badges -->
