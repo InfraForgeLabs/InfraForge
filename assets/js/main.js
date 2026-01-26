@@ -58,40 +58,6 @@ const observer = new IntersectionObserver(
 
 document.querySelectorAll(".fade-in").forEach(el => observer.observe(el));
 
-// =====================
-// Enable download + install (version.json driven)
-// =====================
-(async function enableDownloadAndInstall() {
-  const btn = document.getElementById("download-btn");
-  const note = document.getElementById("download-note");
-  const install = document.getElementById("install-section");
-
-  if (!btn || !note || !install) return;
-
-  try {
-    const info = await getReleaseInfo();
-
-    // Enable button
-    btn.disabled = false;
-    btn.classList.add("enabled");
-    btn.textContent = "Download InfraForge (Linux)";
-    btn.onclick = () => {
-      window.location.href =
-        "https://github.com/InfraForgeLabs/InfraForge/releases/latest";
-    };
-
-    // Reveal install commands
-    install.hidden = false;
-
-    // Update note
-    note.textContent =
-      "Linux installers for Debian and RHEL-based distributions are available.";
-
-  } catch {
-    note.textContent =
-      "Installer information temporarily unavailable. Please refresh.";
-  }
-})();
 
 // =====================
 // Release badge updater
