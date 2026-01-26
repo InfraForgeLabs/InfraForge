@@ -8,6 +8,18 @@ INFRAFORGE_BIN_SOURCE="$(readlink -f "${BASH_SOURCE[0]}")"
 INFRAFORGE_BIN_DIR="$(cd "$(dirname "${INFRAFORGE_BIN_SOURCE}")" && pwd)"
 INFRAFORGE_ROOT="$(cd "${INFRAFORGE_BIN_DIR}/.." && pwd)"
 
+
+get_infraforge_version() {
+  local version_file="${INFRAFORGE_ROOT}/meta/infraforge/version.json"
+
+  if [[ -f "$version_file" ]]; then
+    grep -o '"latest_version"[[:space:]]*:[[:space:]]*"[^"]*"' "$version_file" \
+      | sed 's/.*"latest_version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/v\1/'
+  else
+    echo "vunknown"
+  fi
+}
+
 if [[ "${INFRAFORGE_ROOT}" == "/usr/local" && -d "/usr/local/InfraForge" ]]; then
   INFRAFORGE_ROOT="/usr/local/InfraForge"
   printf "[%s] 📦 Detected global install → Using root: %s\n" "$(date +'%H:%M:%S')" "${INFRAFORGE_ROOT}"
@@ -15,7 +27,7 @@ fi
 
 export INFRAFORGE_ROOT
 export INFRAFORGE_MODE="online"
-export INFRAFORGE_VERSION="v0.9.0"
+export INFRAFORGE_VERSION="$(get_infraforge_version)"
 INFRAFORGE_STACKS=(terraform ansible docker helm k8s jenkins monitoring security argocd aws)
 
 require() { command -v "$1" >/dev/null 2>&1 || { echo "Missing: $1" >&2; exit 1; }; }

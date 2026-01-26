@@ -3,7 +3,7 @@ set -euo pipefail
 
 # ────────────────────────────────────────────────
 # 🌐 InfraForge — Core Common Functions
-# Free · Local · Open · Forever
+# Free · Local · User-Owned · Forever
 # ────────────────────────────────────────────────
 
 # ────────────────────────────────
@@ -40,25 +40,38 @@ INFRAFORGE_REMOTE_CONF_BASE="https://raw.githubusercontent.com/InfraForgeLabs/In
 INFRAFORGE_REPO_API="https://api.github.com/repos/InfraForgeLabs/InfraForge"
 
 # ────────────────────────────────
-# 🏷️ Version Detection
+# 🏷️ Version Detection (version.json first)
 # ────────────────────────────────
 INFRAFORGE_VERSION=""
 CACHE_VERSION_FILE="${INFRAFORGE_CACHE_DIR}/VERSION"
+VERSION_JSON_LOCAL="${INFRAFORGE_ROOT}/meta/infraforge/version.json"
 
-if [[ -d "${INFRAFORGE_ROOT}/.git" ]] && command -v git >/dev/null 2>&1; then
+# 1️⃣ Local installed version.json (authoritative)
+if [[ -f "${VERSION_JSON_LOCAL}" ]]; then
+  INFRAFORGE_VERSION="$(
+    grep -o '"latest_version"[[:space:]]*:[[:space:]]*"[^"]*"' \
+      "${VERSION_JSON_LOCAL}" \
+    | sed 's/.*"latest_version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/v\1/'
+  )"
+fi
+
+# 2️⃣ Cached version (offline-safe)
+if [[ -z "${INFRAFORGE_VERSION}" && -f "${CACHE_VERSION_FILE}" ]]; then
+  INFRAFORGE_VERSION="$(cat "${CACHE_VERSION_FILE}")"
+fi
+
+# 3️⃣ Git tag (developer mode only)
+if [[ -z "${INFRAFORGE_VERSION}" && -d "${INFRAFORGE_ROOT}/.git" ]] && command -v git >/dev/null 2>&1; then
   INFRAFORGE_VERSION="$(git -C "${INFRAFORGE_ROOT}" describe --tags --abbrev=0 2>/dev/null || true)"
-  [[ -n "${INFRAFORGE_VERSION}" ]] && echo "${INFRAFORGE_VERSION}" > "${CACHE_VERSION_FILE}"
 fi
 
-if [[ -z "${INFRAFORGE_VERSION:-}" ]]; then
-  if curl -fsSL "${INFRAFORGE_REPO_API}/tags" -o /tmp/tags.json 2>/dev/null; then
-    INFRAFORGE_VERSION="$(grep -m1 '"name":' /tmp/tags.json | sed -E 's/.*"name": *"([^"]+)".*/\1/')"
-    [[ -n "${INFRAFORGE_VERSION}" ]] && echo "${INFRAFORGE_VERSION}" > "${CACHE_VERSION_FILE}"
-  fi
-fi
+# 4️⃣ Final fallback
+[[ -z "${INFRAFORGE_VERSION}" ]] && INFRAFORGE_VERSION="v0.0.0-dev"
 
-[[ -z "${INFRAFORGE_VERSION:-}" && -f "${CACHE_VERSION_FILE}" ]] && INFRAFORGE_VERSION="$(cat "${CACHE_VERSION_FILE}")"
-[[ -z "${INFRAFORGE_VERSION:-}" ]] && INFRAFORGE_VERSION="v0.0.0-dev"
+# Cache resolved version
+echo "${INFRAFORGE_VERSION}" > "${CACHE_VERSION_FILE}"
+
+export INFRAFORGE_VERSION
 
 # ────────────────────────────────
 # 🌐 Online / Offline Mode
