@@ -55,39 +55,37 @@ const observer = new IntersectionObserver(
 document.querySelectorAll(".fade-in").forEach(el => observer.observe(el));
 
 // =====================
-// Download button enable
+// Download enable (version.json driven)
 // =====================
-(async function enableDownload() {
+(function enableDownloadFromVersion() {
   const btn = document.getElementById("download-btn");
   if (!btn) return;
 
-  try {
-    const info = await getReleaseInfo();
-    if (!info.isReleased) return;
+  fetch(
+    "https://raw.githubusercontent.com/InfraForgeLabs/infraforgelabs.github.io/main/meta/infraforge/version.json",
+    { cache: "no-store" }
+  )
+    .then(res => {
+      if (!res.ok) throw new Error("version not available");
+      return res.json();
+    })
+    .then(data => {
+      if (!data.latest_version) throw new Error("no version");
 
-    btn.disabled = false;
-    btn.classList.add("enabled");
-    btn.textContent = "Download InfraForge (Linux)";
-    btn.onclick = () =>
-      window.location.href =
-        "https://github.com/InfraForgeLabs/infraforge/releases/latest";
-  } catch {}
+      btn.disabled = false;
+      btn.classList.add("enabled");
+      btn.textContent = "Download InfraForge (Linux)";
+
+      btn.addEventListener("click", () => {
+        window.location.href =
+          "https://github.com/InfraForgeLabs/infraforge/releases/latest";
+      });
+    })
+    .catch(() => {
+      // leave disabled if version.json is unreachable
+    });
 })();
 
-// =====================
-// Download note updater
-// =====================
-(async function updateDownloadNote() {
-  const el = document.getElementById("download-note");
-  if (!el) return;
-
-  try {
-    const info = await getReleaseInfo();
-    el.textContent = info.isReleased
-      ? "Linux installers for Debian and RHEL-based distributions are now available."
-      : `Linux installers for Debian and RHEL-based distributions will be available on ${info.releasedAt.toDateString()}.`;
-  } catch {}
-})();
 
 // =====================
 // Install section reveal
