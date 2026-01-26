@@ -8,30 +8,24 @@ INFRAFORGE_BIN_SOURCE="$(readlink -f "${BASH_SOURCE[0]}")"
 INFRAFORGE_BIN_DIR="$(cd "$(dirname "${INFRAFORGE_BIN_SOURCE}")" && pwd)"
 INFRAFORGE_ROOT="$(cd "${INFRAFORGE_BIN_DIR}/.." && pwd)"
 
-
-get_infraforge_version() {
-  local version_file="https://infraforgelabs.in/meta/infraforge/version.json"
-
-  if [[ -f "$version_file" ]]; then
-    grep -o '"latest_version"[[:space:]]*:[[:space:]]*"[^"]*"' "$version_file" \
-      | sed 's/.*"latest_version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/v\1/'
-  else
-    echo "vunknown"
-  fi
-}
-
+# Normalize root for global install
 if [[ "${INFRAFORGE_ROOT}" == "/usr/local" && -d "/usr/local/InfraForge" ]]; then
   INFRAFORGE_ROOT="/usr/local/InfraForge"
-  printf "[%s] 📦 Detected global install → Using root: %s\n" "$(date +'%H:%M:%S')" "${INFRAFORGE_ROOT}"
+  printf "[%s] 📦 Detected global install → Using root: %s\n" \
+    "$(date +'%H:%M:%S')" "${INFRAFORGE_ROOT}"
 fi
 
 export INFRAFORGE_ROOT
-export INFRAFORGE_MODE="online"
-export INFRAFORGE_VERSION="$(get_infraforge_version)"
-INFRAFORGE_STACKS=(terraform ansible docker helm k8s jenkins monitoring security argocd aws)
 
-require() { command -v "$1" >/dev/null 2>&1 || { echo "Missing: $1" >&2; exit 1; }; }
-fatal()   { printf "[%s] ❌ %s\n" "$(date +'%H:%M:%S')" "$*" >&2; exit 1; }
+# 🔑 Load core runtime (version, mode, stacks, logging)
+CORE_COMMON="${INFRAFORGE_ROOT}/lib/core/common.sh"
+[[ -f "$CORE_COMMON" ]] || {
+  echo "❌ Core runtime missing: common.sh" >&2
+  exit 1
+}
+
+# shellcheck source=/dev/null
+source "$CORE_COMMON"
 
 show_help() {
 cat <<EOF
@@ -55,23 +49,33 @@ printf "[%s] ⚙️  InfraForge initialized — %s generator mode (%s)\n" \
 
 ensure_stack_supported() {
   local stack="$1"
-  for s in "${INFRAFORGE_STACKS[@]}"; do [[ "$s" == "$stack" ]] && return 0; done
+  for s in "${INFRAFORGE_STACKS[@]}"; do
+    [[ "$s" == "$stack" ]] && return 0
+  done
   fatal "Unsupported stack: ${stack}"
 }
 
-cmd_list() { for s in "${INFRAFORGE_STACKS[@]}"; do echo "$s"; done; }
+cmd_list() {
+  for s in "${INFRAFORGE_STACKS[@]}"; do
+    echo "$s"
+  done
+}
 
 cmd_gen() {
-  local stack="${1:-}"; shift || true
+  local stack="${1:-}"
+  shift || true
   [[ -n "${stack}" ]] || fatal "Usage: infraforge gen <stack>"
   ensure_stack_supported "$stack"
 
   local script="${INFRAFORGE_ROOT}/lib/scripts/${stack}-gen.sh"
   [[ -x "$script" ]] || fatal "Generator missing: $script"
 
-  printf "[%s] ⚙️  Running %s generator via InfraForge...\n" "$(date +'%H:%M:%S')" "$stack"
+  printf "[%s] ⚙️  Running %s generator via InfraForge...\n" \
+    "$(date +'%H:%M:%S')" "$stack"
+
   if [[ -t 0 && -t 1 ]]; then
-    printf "[%s] 📦 Interactive mode detected → enabling toolkit UI\n" "$(date +'%H:%M:%S')"
+    printf "[%s] 📦 Interactive mode detected → enabling toolkit UI\n" \
+      "$(date +'%H:%M:%S')"
     bash -i "$script" "$@"
   else
     bash "$script" "$@" || true
