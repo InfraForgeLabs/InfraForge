@@ -98,12 +98,12 @@ Get started with InfraForge instantly — no dependencies beyond `git` and `curl
 ## Installation
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/InfraForgeLabs/InfraForge/main/install.sh | sudo bash
+curl -fsSL https://infraforgelabs.in/meta/infraforge/download/install.sh | sudo bash
 ```
 ## Uninstall
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/InfraForgeLabs/InfraForge/main/install.sh | sudo bash -s uninstall
+curl -fsSL https://infraforgelabs.in/meta/infraforge/download/install.sh | sudo bash -s uninstall
 ```
 
 ## Verification
