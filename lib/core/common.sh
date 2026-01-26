@@ -36,7 +36,6 @@ INFRAFORGE_CACHE_DIR="${HOME}/.infraforge/cache"
 INFRAFORGE_LOG_DIR="${HOME}/.infraforge/logs"
 mkdir -p "${INFRAFORGE_CACHE_DIR}" "${INFRAFORGE_LOG_DIR}"
 
-INFRAFORGE_REMOTE_CONF_BASE="https://raw.githubusercontent.com/InfraForgeLabs/InfraForge/main/configs"
 INFRAFORGE_REPO_API="https://api.github.com/repos/InfraForgeLabs/InfraForge"
 
 # ────────────────────────────────
@@ -64,12 +63,12 @@ if [[ "$INFRAFORGE_VERSION" == "vunknown" && -f "$CACHE_VERSION_FILE" ]]; then
 fi
 
 # 3️⃣ Fallback to git tag (dev installs only)
-if [[ "$INFRAFORGE_VERSION" == "vunknown" && -d "${INFRAFORGE_ROOT}/.git" ]] && command -v git >/dev/null 2>&1; then
+if [[ "$INFRAFORGE_VERSION" == "vunknown" && -d "${INFRAFORGE_ROOT}/.git" ]] \
+   && command -v git >/dev/null 2>&1; then
   INFRAFORGE_VERSION="$(git -C "${INFRAFORGE_ROOT}" describe --tags --abbrev=0 2>/dev/null || echo vunknown)"
 fi
 
 export INFRAFORGE_VERSION
-
 
 # ────────────────────────────────
 # 🌐 Online / Offline Mode
