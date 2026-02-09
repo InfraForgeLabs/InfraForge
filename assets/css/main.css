@@ -283,3 +283,34 @@ body {
   margin-top: 1rem;
 }
 
+.code-block {
+  position: relative;
+  margin-top: 10px;
+}
+
+.code-block pre {
+  padding: 14px 16px;
+  background: #0b0f17;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow-x: auto;
+  font-size: 0.9rem;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.copy-btn:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.05);
+}
