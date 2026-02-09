@@ -88,3 +88,15 @@ document.querySelectorAll(".fade-in").forEach(el => observer.observe(el));
     // keep static fallback
   }
 })();
+
+function copyCode(btn) {
+  const code = btn.nextElementSibling.innerText.trim();
+
+  navigator.clipboard.writeText(code).then(() => {
+    const original = btn.innerText;
+    btn.innerText = "Copied";
+    setTimeout(() => {
+      btn.innerText = original;
+    }, 1200);
+  });
+}
